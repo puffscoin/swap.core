@@ -49,7 +49,7 @@ const eosMockProvider = () => {
 }
 
 const accounts = {
-  eth: {
+  puffs: {
     address: '0xdadadadadadadadadadadadadadadadadadadada',
   },
   btc: btcKey,
@@ -69,7 +69,7 @@ const mockSwapApp = {
   env: {
     bitcoin,
     web3: {
-      eth: {
+      puffs: {
         getGasPrice: jest.fn(gas => Promise.resolve(2e9)),
         getBalance: jest.fn(address => 3e18),
         Contract: function () {
@@ -147,7 +147,7 @@ class SwapInterface {
 }
 
 const constants = {
-  COINS: { btc: 'BTC', eth: 'ETH', swap: 'SWAP', usdt: 'USDT', eos: 'EOS' },
+  COINS: { btc: 'BTC', puffs: 'PUFFS', swap: 'SWAP', usdt: 'USDT', eos: 'EOS' },
 }
 
 export default mockSwapApp
