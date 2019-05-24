@@ -28,7 +28,7 @@ import { PUFFS2BTC, BTC2PUFFS, PUFFSTOKEN2BTC, BTC2PUFFSTOKEN } from 'swap.flows
 const web3 = new Web3(new Web3.providers.HttpProvider('https://puffsnet.provider/<YOUR_KEY>'))
 
 SwapApp.setup({
-  network: 'puffsnet',
+  network: 'mainnet',
 
   env: {
     web3,
@@ -212,7 +212,7 @@ SwapApp.services.orders.create({
   <tbody>
     <tr>
       <td>isMainNet()</td>
-      <td>Returns <b>true</b> if SwapApp.network === 'puffsnet'</td>
+      <td>Returns <b>true</b> if SwapApp.network === 'mainnet'</td>
     </tr>
     <tr>
       <td>isTestNet()</td>
@@ -302,8 +302,8 @@ new SwapAuth({
 ```
 
 You can pass `null` or private key as value. If `null` passed new private key will be created, this key will be saved
-in `SwapApp.env.storage` by key `{network}:{coinName}:privateKey` - for network: `puffsnet` and coin `puffs` it will be
-`puffsnet:puffs:privateKey`
+in `SwapApp.env.storage` by key `{network}:{coinName}:privateKey` - for network: `mainnet` and coin `puffs` it will be
+`mainnet:puffs:privateKey`
 
 #### Public props
 
