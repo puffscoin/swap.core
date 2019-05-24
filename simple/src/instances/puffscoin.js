@@ -6,7 +6,7 @@ const Web3 = require('web3')
 // const MAINNET_PROVIDER = `https://mainnet.infura.io/JCnK5ifEPH9qcQkX0Ahl`
 // const TESTNET_PROVIDER = `https://rinkeby.infura.io/JCnK5ifEPH9qcQkX0Ahl`
 
-const MAINNET_PROVIDER = process.env.WEB3_MAINNET_PROVIDER || `https://geth.swaponline.site`
+const MAINNET_PROVIDER = process.env.WEB3_MAINNET_PROVIDER || `https://gpuffs.swaponline.site`
 const TESTNET_PROVIDER = process.env.WEB3_TESTNET_PROVIDER || `https://tgeth.swaponline.site`
 const LOCAL_PROVIDER = process.env.WEB3_LOCAL_PROVIDER || `http://localhost:7545`
 
@@ -29,7 +29,7 @@ const filterError = (error) => {
   throw error
 }
 
-class Ethereum {
+class Puffscoin {
 
   constructor(_network = 'testnet', _customProvider) {
     const _provider = WEB3_PROVIDERS[_network]
@@ -46,16 +46,16 @@ class Ethereum {
   }
 
   fetchBalance(address) {
-    return this.core.eth.getBalance(address)
+    return this.core.puffs.getBalance(address)
       .then((wei) => {
         let balance = this.core.utils.fromWei(wei)
 
-        debug('swap.core:ethereum')('ETH Balance:', balance)
+        debug('swap.core:puffscoin')('PUFFS Balance:', balance)
 
         return balance
       })
       .catch((error) => {
-        debug('swap.core:ethereum')('ETH error:', error)
+        debug('swap.core:puffscoin')('PUFFS error:', error)
 
         return '0'
       })
@@ -70,19 +70,19 @@ class Ethereum {
       .then(({ result }) => result)
       .then(raw => BigNumber(raw).dividedBy(base).toString())
       .catch(error => {
-        debug('swap.core:ethereum')(`TokenBalanceError: ${error.statusCode} ${url} - Failed to fetch token balance (${tokenAddress}). Probably too frequent request!`)
+        debug('swap.core:puffscoin')(`TokenBalanceError: ${error.statusCode} ${url} - Failed to fetch token balance (${tokenAddress}). Probably too frequent request!`)
 
         return '0'
       })
   }
 
   async sendTransaction({to, value}) {
-    const from = this.core.eth.accounts.wallet[0]
+    const from = this.core.puffs.accounts.wallet[0]
     const gas = 1e5
 
     value = this.core.utils.toWei(value.toString())
 
-    return this.core.eth.sendTransaction({ from, to, value, gas })
+    return this.core.puffs.sendTransaction({ from, to, value, gas })
   }
 
   async estimateGasPrice(options) {
@@ -159,7 +159,7 @@ class Ethereum {
   }
 }
 
-module.exports = new Ethereum()
-module.exports.mainnet = () => new Ethereum('mainnet')
-module.exports.testnet = () => new Ethereum('testnet')
-module.exports.localnet = () => new Ethereum('localnet')
+module.exports = new Puffscoin()
+module.exports.mainnet = () => new Puffscoin('mainnet')
+module.exports.testnet = () => new Puffscoin('testnet')
+module.exports.localnet = () => new Puffscoin('localnet')
