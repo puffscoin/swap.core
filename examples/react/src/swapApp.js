@@ -50,7 +50,7 @@ SwapApp.setup({
 
   services: [
     new SwapAuth({
-      eth: null, // or pass private key here
+      puffs: null, // or pass private key here
       btc: null,
     }),
     new SwapRoom({
