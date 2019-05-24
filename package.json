@@ -1,13 +1,13 @@
 {
-  "name": "swap.core",
+  "name": "puffsswap.core",
   "version": "0.3.5-3",
-  "description": "Swap Core",
-  "homepage": "https://github.com/swaponline/swap.core",
-  "author": "Pavel Ivanov <grammka@gmail.com> (https://github.com/pavelivanov)",
+  "description": "PuffsSwap Core",
+  "homepage": "https://github.com/puffscoin/puffsswap.core",
+  "author": "Abvhiael Stuart <abvhiael@leafycauldronapothecary.com> (https://github.com/puffscoin)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/swaponline/swap.core.git"
+    "url": "git+https://github.com/puffscoin/puffsswap.core.git"
   },
   "main": "index.js",
   "scripts": {
@@ -35,7 +35,7 @@
     "command-line-usage": "^5.0.5",
     "debug": "^4.1.0",
     "eosjs": "^15.0.3",
-    "ethereum-input-data-decoder": "0.0.12",
+    "puffscoin-input-data-decoder": "0.0.12",
     "node-gyp": "^3.8.0",
     "rebuild": "^0.1.2",
     "typeforce": "^1.12.0"
