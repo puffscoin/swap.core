@@ -1,11 +1,11 @@
 // Private Keys ---------------------------------------------- /
 
 // Chrome
-// localStorage.setItem('ethPrivateKey', '0xa6316e9e231fa70f2f41ce755f3846b74af10e8c5def8d333ec89af3b9b4193b')
+// localStorage.setItem('puffsPrivateKey', '0xa6316e9e231fa70f2f41ce755f3846b74af10e8c5def8d333ec89af3b9b4193b')
 // localStorage.setItem('btcPrivateKey', 'cUSH65TpCkU5rsMem8WND5itr3SVF192EAKA8E5ipqs15fTJiRbc')
 
 // Yandex
-// localStorage.setItem('ethPrivateKey', '0xe32a5cb068a13836b6bc80f54585bbfcc2d5d9089f0c5381b27d039b6d2404ec')
+// localStorage.setItem('puffsPrivateKey', '0xe32a5cb068a13836b6bc80f54585bbfcc2d5d9089f0c5381b27d039b6d2404ec')
 // localStorage.setItem('btcPrivateKey', 'cRF7Az481ffsuhhZ28x32Xk4ZvPh98zhKv7hCi1pKjifqvv7AcuX')
 
 const localClear = localStorage.clear.bind(localStorage)
@@ -65,16 +65,16 @@ const config = {
   },
 };
 window.clear = localStorage.clear = () => {
-  const testnetEthPrivateKey = localStorage.getItem('testnet:eth:PrivateKey')
+  const testnetPuffsPrivateKey = localStorage.getItem('testnet:puffs:PrivateKey')
   const testnetBtcPrivateKey = localStorage.getItem('testnet:btc:PrivateKey')
-  const mainnetEthPrivateKey = localStorage.getItem('mainnet:eth:PrivateKey')
+  const mainnetPuffsPrivateKey = localStorage.getItem('puffsnet:puffs:PrivateKey')
   const mainnetBtcPrivateKey = localStorage.getItem('mainnet:btc:PrivateKey')
 
   localClear()
 
-  localStorage.getItem('testnet:eth:PrivateKey', testnetEthPrivateKey)
+  localStorage.getItem('testnet:puffs:PrivateKey', testnetPuffsPrivateKey)
   localStorage.getItem('testnet:btc:PrivateKey', testnetBtcPrivateKey)
-  localStorage.getItem('mainnet:eth:PrivateKey', mainnetEthPrivateKey)
+  localStorage.getItem('puffsnet:puffs:PrivateKey', puffsnetPuffsPrivateKey)
   localStorage.getItem('mainnet:btc:PrivateKey', mainnetBtcPrivateKey)
 }
 
@@ -112,12 +112,12 @@ window.swap.core.app.setup({
     new window.swap.core.orders(),
   ],
   swaps: [
-    new window.swap.core.swaps.EthSwap({
+    new window.swap.core.swaps.PuffsSwap({
       address: '0xe08907e0e010a339646de2cc56926994f58c4db2',
       abi: [ { "constant": false, "inputs": [ { "name": "_ownerAddress", "type": "address" } ], "name": "abort", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "_participantAddress", "type": "address" } ], "name": "close", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "_secretHash", "type": "bytes20" }, { "name": "_participantAddress", "type": "address" } ], "name": "createSwap", "outputs": [], "payable": true, "stateMutability": "payable", "type": "function" }, { "constant": false, "inputs": [ { "name": "_participantAddress", "type": "address" } ], "name": "refund", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "_ratingContractAddress", "type": "address" } ], "name": "setReputationAddress", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [ { "name": "_participantAddress", "type": "address" } ], "name": "sign", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "constant": false, "inputs": [ { "name": "_secret", "type": "bytes32" }, { "name": "_ownerAddress", "type": "address" } ], "name": "withdraw", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": true, "inputs": [ { "name": "_ownerAddress", "type": "address" } ], "name": "checkSign", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_ownerAddress", "type": "address" }, { "name": "_participantAddress", "type": "address" } ], "name": "getInfo", "outputs": [ { "name": "", "type": "bytes32" }, { "name": "", "type": "bytes20" }, { "name": "", "type": "uint256" }, { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_participantAddress", "type": "address" } ], "name": "getSecret", "outputs": [ { "name": "", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "owner", "outputs": [ { "name": "", "type": "address" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "", "type": "address" }, { "name": "", "type": "address" } ], "name": "participantSigns", "outputs": [ { "name": "", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "ratingContractAddress", "outputs": [ { "name": "", "type": "address" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "", "type": "address" }, { "name": "", "type": "address" } ], "name": "swaps", "outputs": [ { "name": "secret", "type": "bytes32" }, { "name": "secretHash", "type": "bytes20" }, { "name": "createdAt", "type": "uint256" }, { "name": "balance", "type": "uint256" } ], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [ { "name": "_ownerAddress", "type": "address" }, { "name": "_participantAddress", "type": "address" } ], "name": "unsafeGetSecret", "outputs": [ { "name": "", "type": "bytes32" } ], "payable": false, "stateMutability": "view", "type": "function" } ],
       fetchBalance: (address) => {},
     }),
-	new window.swap.core.swaps.EthTokenSwap({
+	new window.swap.core.swaps.PuffsTokenSwap({
 		name: window.swap.core.constants.COINS.noxon,
 		address: config.token.contract,
 		decimals: config.tokens.noxon.decimals,
@@ -133,12 +133,12 @@ window.swap.core.app.setup({
     }),
   ],
   flows: [
-      window.swap.core.flows.ETH2BTC,
-      window.swap.core.flows.BTC2ETH,
-	  window.swap.core.flows.ETHTOKEN2BTC(window.swap.core.constants.COINS.noxon),
-      window.swap.core.flows.BTC2ETHTOKEN(window.swap.core.constants.COINS.noxon),
-	  window.swap.core.flows.ETHTOKEN2BTC(window.swap.core.constants.COINS.swap),
-      window.swap.core.flows.BTC2ETHTOKEN(window.swap.core.constants.COINS.swap),
+      window.swap.core.flows.PUFFS2BTC,
+      window.swap.core.flows.BTC2PUFFS,
+	  window.swap.core.flows.PUFFSTOKEN2BTC(window.swap.core.constants.COINS.noxon),
+      window.swap.core.flows.BTC2PUFFSTOKEN(window.swap.core.constants.COINS.noxon),
+	  window.swap.core.flows.PUFFSTOKEN2BTC(window.swap.core.constants.COINS.swap),
+      window.swap.core.flows.BTC2PUFFSTOKEN(window.swap.core.constants.COINS.swap),
   ]
 })
 
