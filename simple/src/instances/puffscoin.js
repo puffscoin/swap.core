@@ -16,8 +16,8 @@ const WEB3_PROVIDERS = {
   localnet: new Web3.providers.HttpProvider(LOCAL_PROVIDER),
 }
 
-const ETHERCHAIN_API = `https://www.etherchain.org/api/gasPriceOracle`
-const ETHGASSTATION_API = `https://ethgasstation.info/json/ethgasAPI.json`
+const PUFFSCHAIN_API = `https://puffschain.leafycauldronapothecary.com/api/gasPriceOracle`
+const ETHGASSTATION_API = `https://puffsgasstation.leafycauldronapothecary.com/json/puffsgasAPI.json`
 const BigNumber = require('bignumber.js')
 const TEN = new BigNumber(10)
 
@@ -40,9 +40,9 @@ class Puffscoin {
       this.core = new Web3(_provider)
     }
 
-    this.etherscan = _network === 'testnet'
-      ? `https://rinkeby.etherscan.io`
-      : `https://api.etherscan.io`
+    this.puffsscan = _network === 'testnet'
+      ? `https://puffsscan.leafycauldronapothecary.com`
+      : `https://api.puffsscan.leafycauldronapothecary.com`
   }
 
   fetchBalance(address) {
@@ -63,7 +63,7 @@ class Puffscoin {
 
   fetchTokenBalance(address, tokenAddress, decimals) {
     const base = TEN.pow(decimals) // 1e18 usually
-    const url = `${this.etherscan}/api?module=account&action=tokenbalance&contractaddress=${tokenAddress}&address=${address}`
+    const url = `${this.puffsscan}/api?module=account&action=tokenbalance&contractaddress=${tokenAddress}&address=${address}`
 
     return request.get(url)
       .then(json => JSON.parse(json))
@@ -87,15 +87,15 @@ class Puffscoin {
 
   async estimateGasPrice(options) {
     try {
-      return await this.estimateGasPriceEtherChain(options)
+      return await this.estimateGasPricePuffsChain(options)
     } catch (etherChainError) {
-      console.error(`EstimateFeeError: EtherChain ${etherChainError.message}, falling back to EthGasStation estimation...`)
+      console.error(`EstimateFeeError: PuffsChain ${puffsChainError.message}, falling back to PuffsGasStation estimation...`)
     }
 
     try {
-      return await this.estimateGasPriceEthGasStation(options)
-    } catch(ethGasStationError) {
-      console.error(`EstimateFeeError: EthGasStation ${ethGasStationError.message}, falling back to Web3 estimation...`)
+      return await this.estimateGasPricePuffsGasStation(options)
+    } catch(puffsGasStationError) {
+      console.error(`EstimateFeeError: PuffsGasStation ${puffsGasStationError.message}, falling back to Web3 estimation...`)
     }
 
     return await this.estimateGasPriceWeb3(options)
@@ -112,7 +112,7 @@ class Puffscoin {
     })()
 
     const gasPrice = await new Promise((resolve, reject) =>
-      this.core.eth.getGasPrice((err, gasPrice) => {
+      this.core.puffs.getGasPrice((err, gasPrice) => {
         if (err) {
           reject(err)
         } else {
@@ -124,7 +124,7 @@ class Puffscoin {
     return BigNumber(gasPrice).multipliedBy(_multiplier)
   }
 
-  estimateGasPriceEtherChain({ speed = 'fast' } = {}) {
+  estimateGasPricePuffsChain({ speed = 'fast' } = {}) {
     const _speed = (() => {
       switch (speed) {
         case 'fast':    return 'fast'
@@ -135,13 +135,13 @@ class Puffscoin {
     })()
 
     return request
-      .get(`${ETHERCHAIN_API}`)
+      .get(`${PUFFSCHAIN_API}`)
       .then(json => JSON.parse(json))
       .then(fees => BigNumber(fees[_speed]).multipliedBy(1e9))
       .catch(error => filterError(error))
   }
 
-  estimateGasPriceEthGasStation({ speed = 'fast' }) {
+  estimateGasPricePuffsGasStation({ speed = 'fast' }) {
     const _speed = (() => {
       switch (speed) {
         case 'fast':    return 'fast'
@@ -152,7 +152,7 @@ class Puffscoin {
     })()
 
     return request
-      .get(`${ETHGASSTATION_API}`)
+      .get(`${PUFFSGASSTATION_API}`)
       .then(json => JSON.parse(json))
       .then(fees => BigNumber(fees[_speed]).dividedBy(10).multipliedBy(1e9))
       .catch(error => filterError(error))
