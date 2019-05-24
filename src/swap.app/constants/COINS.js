@@ -1,5 +1,5 @@
 export const NATIVE = {
-  eth: 'ETH',
+  puffs: 'PUFFS',
   btc: 'BTC',
   bch: 'BCH',
   ltc: 'LTC',
@@ -8,7 +8,7 @@ export const NATIVE = {
   usdt: 'USDT',
 }
 
-export const ETH_TOKENS = {
+export const PUFFS_TOKENS = {
   noxon: 'NOXON',
   jot: 'JOT',
   swap: 'SWAP',
@@ -64,5 +64,5 @@ export const ETH_TOKENS = {
 
 export default {
   ...NATIVE,
-  ...ETH_TOKENS,
+  ...PUFFS_TOKENS,
 }
