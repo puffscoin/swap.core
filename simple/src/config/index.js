@@ -1,6 +1,6 @@
 const testnet = require('./testnet')
 const localnet = require('./localnet')
-const puffsnet = require('./puffsnet')
+const mainnet = require('./mainnet')
 
 const getConfig = require('./getConfig')
 
@@ -11,7 +11,7 @@ const tokenSwap = require('./tokenSwap')
 module.exports = {
   testnet: getConfig(testnet),
   localnet: getConfig(localnet),
-  puffsnet: getConfig(puffsnet),
+  mainnet: getConfig(mainnet),
 
   tokenSwap: (config) => new PuffsTokenSwap(tokenSwap(config)()),
 }
