@@ -67,14 +67,14 @@ const config = {
 window.clear = localStorage.clear = () => {
   const testnetPuffsPrivateKey = localStorage.getItem('testnet:puffs:PrivateKey')
   const testnetBtcPrivateKey = localStorage.getItem('testnet:btc:PrivateKey')
-  const mainnetPuffsPrivateKey = localStorage.getItem('puffsnet:puffs:PrivateKey')
+  const mainnetPuffsPrivateKey = localStorage.getItem('mainnet:puffs:PrivateKey')
   const mainnetBtcPrivateKey = localStorage.getItem('mainnet:btc:PrivateKey')
 
   localClear()
 
   localStorage.getItem('testnet:puffs:PrivateKey', testnetPuffsPrivateKey)
   localStorage.getItem('testnet:btc:PrivateKey', testnetBtcPrivateKey)
-  localStorage.getItem('puffsnet:puffs:PrivateKey', puffsnetPuffsPrivateKey)
+  localStorage.getItem('mainnet:puffs:PrivateKey', mainnetPuffsPrivateKey)
   localStorage.getItem('mainnet:btc:PrivateKey', mainnetBtcPrivateKey)
 }
 
