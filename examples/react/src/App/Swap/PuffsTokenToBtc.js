@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import Loader from '../Loader/Loader'
 
 
-export default class EthTokenToBtc extends Component {
+export default class PuffsTokenToBtc extends Component {
 
   constructor({ swap }) {
     super()
@@ -229,21 +229,21 @@ export default class EthTokenToBtc extends Component {
               }
 
               {
-                (flow.step === 5 || flow.isEthContractFunded) && (
-                  <h3>4. Creating Ethereum Contract. Please wait, it will take a while</h3>
+                (flow.step === 5 || flow.isPuffsContractFunded) && (
+                  <h3>4. Creating Puffs Contract. Please wait, it will take a while</h3>
                 )
               }
               {
-                flow.ethSwapCreationTransactionHash && (
+                flow.puffsSwapCreationTransactionHash && (
                   <div>
                     Transaction:
                     <strong>
                       <a
-                        href={`https://rinkeby.etherscan.io/tx/${flow.ethSwapCreationTransactionHash}`}
+                        href={`https://rinkeby.etherscan.io/tx/${flow.puffsSwapCreationTransactionHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {flow.ethSwapCreationTransactionHash}
+                        {flow.puffsSwapCreationTransactionHash}
                       </a>
                     </strong>
                   </div>
@@ -256,11 +256,11 @@ export default class EthTokenToBtc extends Component {
               }
 
               {
-                (flow.step === 6 || flow.isEthWithdrawn) && (
+                (flow.step === 6 || flow.isPuffsWithdrawn) && (
                   <Fragment>
-                    <h3>5. Waiting BTC Owner adds Secret Key to ETH Contact</h3>
+                    <h3>5. Waiting as BTC Owner adds Secret Key to Puffs Contact</h3>
                     {
-                      !flow.isEthWithdrawn && (
+                      !flow.isPuffsWithdrawn && (
                         <Loader />
                       )
                     }
@@ -270,7 +270,7 @@ export default class EthTokenToBtc extends Component {
 
               {
                 (flow.step === 7 || flow.isBtcWithdrawn) && (
-                  <h3>6. BTC Owner successfully took money from ETH Contract and left Secret Key. Requesting withdrawal from BTC Script. Please wait</h3>
+                  <h3>6. BTC Owner successfully took money from Puffs Contract and left Secret Key. Requesting withdrawal from BTC Script. Please wait</h3>
                 )
               }
               {
