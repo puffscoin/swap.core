@@ -1,10 +1,10 @@
-const ethereum = require('../instances/ethereum')
+const puffscoin = require('../instances/puffscoin')
 const ERC20 = require('./ERC20')
 
-const eth = {
-  mainnet: ethereum.mainnet(),
-  testnet: ethereum.testnet(),
-  localnet: ethereum.localnet(),
+const puffs = {
+  mainnet: puffscoin.mainnet(),
+  testnet: puffscoin.testnet(),
+  localnet: puffscoin.localnet(),
 }
 
 const SwapContract = {
@@ -28,6 +28,6 @@ module.exports = ({ network, name, decimals, tokenAddress }) => (contract = {}) 
   gasLimit: 3e5,
   address: contract.address || SwapContract[network].address,
   abi: contract.abi || SwapContract[network].abi,
-  fetchBalance: (address) => eth[network].fetchTokenBalance(address, tokenAddress, decimals),
-  estimateGasPrice: ({ speed } = {}) => ethereum.estimateGasPrice({ speed }),
+  fetchBalance: (address) => puffs[network].fetchTokenBalance(address, tokenAddress, decimals),
+  estimateGasPrice: ({ speed } = {}) => puffscoin.estimateGasPrice({ speed }),
 })
