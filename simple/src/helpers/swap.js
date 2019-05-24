@@ -34,14 +34,14 @@ export const generateSecret = () => crypto.randomBytes(32).toString('hex')
 export const start = (swap) =>
   new Promise(async resolve => {
     switch (swap.flow._flowName) {
-      case "BTC2ETH":
+      case "BTC2PUFFS":
         await onStep(swap, 2)
 
         const secret = generateSecret()
         swap.flow.submitSecret(secret)
 
         break;
-      case "ETH2BTC":
+      case "PUFFS2BTC":
         await onStep(swap, 1)
         swap.flow.sign()
 
