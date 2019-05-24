@@ -1,11 +1,11 @@
-import { NATIVE, ETH_TOKENS } from './COINS'
+import { NATIVE, PUFFS_TOKENS } from './COINS'
 
 export default [
-  'ETH-BTC',
+  'PUFFS-BTC',
   'EOS-BTC',
   'LTC-BTC',
-  'ETH-LTC',
+  'PUFFS-LTC',
 
-  ...Object.values(ETH_TOKENS).map(token => `${token}-BTC`),
-  ...Object.values(ETH_TOKENS).map(token => `${token}-USDT`),
+  ...Object.values(PUFFS_TOKENS).map(token => `${token}-BTC`),
+  ...Object.values(PUFFS_TOKENS).map(token => `${token}-USDT`),
 ]
