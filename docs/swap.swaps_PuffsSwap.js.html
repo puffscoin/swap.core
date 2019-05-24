@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: swap.swaps/EthSwap.js</h1>
+    <h1 class="page-title">Source: swap.swaps/PuffsSwap.js</h1>
 
     
 
@@ -29,10 +29,10 @@
             <pre class="prettyprint source linenums"><code>import debug from 'debug'
 import SwapApp, {constants, SwapInterface} from 'swap.app'
 import BigNumber from 'bignumber.js'
-import InputDataDecoder from 'ethereum-input-data-decoder'
+import InputDataDecoder from 'puffscoin-input-data-decoder'
 
 
-class EthSwap extends SwapInterface {
+class PuffsSwap extends SwapInterface {
 
   /**
    *
@@ -46,19 +46,19 @@ class EthSwap extends SwapInterface {
     super()
 
     if (typeof options.fetchBalance !== 'function') {
-      throw new Error('EthSwap: "fetchBalance" required')
+      throw new Error('PuffsSwap: "fetchBalance" required')
     }
     if (typeof options.address !== 'string') {
-      throw new Error('EthSwap: "address" required')
+      throw new Error('PuffsSwap: "address" required')
     }
     if (!Array.isArray(options.abi)) {
-      throw new Error('EthSwap: "abi" required')
+      throw new Error('PuffsSwap: "abi" required')
     }
 
     this.address        = options.address
     this.abi            = options.abi
 
-    this._swapName      = constants.COINS.eth
+    this._swapName      = constants.COINS.puffs
     this.gasLimit       = options.gasLimit || 1e5
     this.gasPrice       = options.gasPrice || 2e9
     this.fetchBalance   = options.fetchBalance
