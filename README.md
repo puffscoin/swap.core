@@ -514,17 +514,17 @@ create({
 
 This package contains set of classes which provide functionality for swap operations:
 deposit funds, check balance, withdraw, refund, abort swap, etc. Each file (class) written for specific
-blockchain (EthSwap, BtcSwap) / coin (EthTokenSwap). These classes used inside Swap process by swap.flows,
+blockchain (PuffsSwap, BtcSwap) / coin (PuffsTokenSwap). These classes used inside Swap process by swap.flows,
 developer needs only to pass necessary class to SwapApp setup config:
 
 ```
 swapApp.setup({
   ...
   swaps: [
-    new EthSwap({
+    new PuffsSwap({
       address: '0xdbC2395f753968a93465487022B0e5D8730633Ec',
       abi: [{"constant":false,"inputs":[{"name":"_secret","type":"bytes32"},{"name":"_ownerAddress","type":"address"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_participantAddress","type":"address"}],"name":"getSecret","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_ratingContractAddress","type":"address"}],"name":"setReputationAddress","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"participantSigns","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_ownerAddress","type":"address"}],"name":"abort","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"swaps","outputs":[{"name":"secret","type":"bytes32"},{"name":"secretHash","type":"bytes20"},{"name":"createdAt","type":"uint256"},{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_secretHash","type":"bytes20"},{"name":"_participantAddress","type":"address"}],"name":"createSwap","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"_ownerAddress","type":"address"}],"name":"checkSign","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_participantAddress","type":"address"}],"name":"close","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"ratingContractAddress","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_participantAddress","type":"address"}],"name":"sign","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_ownerAddress","type":"address"}],"name":"getBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_participantAddress","type":"address"}],"name":"refund","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[],"name":"Sign","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"createdAt","type":"uint256"}],"name":"CreateSwap","type":"event"},{"anonymous":false,"inputs":[],"name":"Withdraw","type":"event"},{"anonymous":false,"inputs":[],"name":"Close","type":"event"},{"anonymous":false,"inputs":[],"name":"Refund","type":"event"},{"anonymous":false,"inputs":[],"name":"Abort","type":"event"}],
-      fetchBalance: (address) => ethereumInstance.fetchBalance(address),
+      fetchBalance: (address) => puffscoinInstance.fetchBalance(address),
     }),
     new BtcSwap({
       fetchBalance: (address) => bitcoinInstance.fetchBalance(address),
@@ -684,7 +684,7 @@ refund(data, handleTransactionHash)
 </details>
 
 
-### EthSwap
+### PuffsSwap
 
 <details>
 <summary>Public methods</summary>
@@ -780,7 +780,7 @@ close(data, handleTransactionHash)
 </details>
 
 
-### EthTokenSwap
+### PuffsTokenSwap
 
 <details>
 <summary>Public methods</summary>
@@ -904,31 +904,25 @@ close(data, handleTransactionHash)
 This package contains set of classes which describe how swaps will be processed step by step.
 
 
-### BTC2ETH
+### BTC2PUFFS
 
-Requires: **BtcSwap**, **EthSwap**
+Requires: **BtcSwap**, **PuffsSwap**
 
-### ETH2BTC
+### PUFFS2BTC
 
-Requires: **BtcSwap**, **EthSwap**
+Requires: **BtcSwap**, **PuffsSwap**
 
-### BTC2ETHTOKEN
-
-_* Note this is class factory_
-
-Requires: **BtcSwap**, **EthTokenSwap**
-
-### ETHTOKEN2BTC
+### BTC2PUFFSTOKEN
 
 _* Note this is class factory_
 
-Requires: **BtcSwap**, **EthTokenSwap**
+Requires: **BtcSwap**, **PuffsTokenSwap**
 
+### PUFFSTOKEN2BTC
 
+_* Note this is class factory_
 
-## [swap.swap]
-
-###_WILL_BE_SOON_
+Requires: **BtcSwap**, **PuffsTokenSwap**
 
 
 ---
@@ -977,14 +971,14 @@ resolve: {
   <thead style="font-weight: bold;">
     <tr>
       <td>Alice persist</td>
-      <td>Alice <b>BTC -> ETH</b></td>
-      <td>Bob <b>ETH -> BTC</b></td>
+      <td>Alice <b>BTC -> PUFFS</b></td>
+      <td>Bob <b>PUFFS -> BTC</b></td>
       <td>Bob persist</td>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>EthContract.checkSign()</td>
+      <td>PuffsContract.checkSign()</td>
       <td>1) Wait for sign</td>
       <td>1) Sign</td>
       <td></td>
@@ -1014,8 +1008,8 @@ resolve: {
       <!--td></td-->
     </tr>
     <tr>
-      <td rowspan="3">EthSwap.checkBalance()</td>
-      <td rowspan="3">6) Wait for ETH contract</td>
+      <td rowspan="3">PuffsSwap.checkBalance()</td>
+      <td rowspan="3">6) Wait for PUFFS contract</td>
       <td>3) Verify BTC script</td>
       <td></td>
     </tr>
@@ -1028,14 +1022,14 @@ resolve: {
     <tr>
       <!--td></td-->
       <!--td></td-->
-      <td>5) Create ETH contract</td>
+      <td>5) Create PUFFS contract</td>
       <td></td>
     </tr>
     <tr>
       <td></td>
-      <td>7) Withdraw from ETH contract</td>
-      <td>6) Wait for withdraw from ETH contract</td>
-      <td>EthSwap.getSecret()</td>
+      <td>7) Withdraw from PUFFS contract</td>
+      <td>6) Wait for withdraw from PUFFS contract</td>
+      <td>PuffsSwap.getSecret()</td>
     </tr>
     <tr>
       <td></td>
