@@ -4,18 +4,18 @@ import SwapApp from 'swap.app'
 const login = (_privateKey, app) => {
   SwapApp.required(app)
 
-  const storageKey = `${app.network}:eth:privateKey`
+  const storageKey = `${app.network}:puffs:privateKey`
   const privateKey = _privateKey || app.env.storage.getItem(storageKey)
   let account
 
   if (privateKey) {
-    account = app.env.web3.eth.accounts.privateKeyToAccount(privateKey)
+    account = app.env.web3.puffs.accounts.privateKeyToAccount(privateKey)
   }
   else {
-    account = app.env.web3.eth.accounts.create()
+    account = app.env.web3.puffs.accounts.create()
   }
 
-  app.env.web3.eth.accounts.wallet.add(account.privateKey)
+  app.env.web3.puffs.accounts.wallet.add(account.privateKey)
 
   if (!_privateKey) {
     app.env.storage.setItem(storageKey, account.privateKey)
