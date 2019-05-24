@@ -9,7 +9,7 @@ const {
 } = swap.helpers
 
 const _ORDER = {
-  buyCurrency: 'ETH',
+  buyCurrency: 'PUFFS',
   sellCurrency: 'BTC',
   buyAmount: 20,
   sellAmount: "1",
