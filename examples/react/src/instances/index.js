@@ -1,8 +1,8 @@
-import ethereum from './ethereum'
+import puffscoin from './puffscoin'
 import bitcoin from './bitcoin'
 
 
 export {
-  ethereum as ethereumInstance,
+  puffscoin as puffscoinInstance,
   bitcoin as bitcoinInstance,
 }
