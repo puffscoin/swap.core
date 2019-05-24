@@ -168,7 +168,7 @@ export default class BtcToPuffsToken extends Component {
                     Transaction:
                     <strong>
                       <a
-                        href={`https://rinkeby.etherscan.io/tx/${flow.ethSwapWithdrawTransactionHash}`}
+                        href={`https://rinkeby.etherscan.io/tx/${flow.puffsSwapWithdrawTransactionHash}`}
                         target="_blank"
                         rel="noreferrer noopener"
                       >
