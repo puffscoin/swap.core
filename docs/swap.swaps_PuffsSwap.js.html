@@ -66,12 +66,12 @@ class PuffsSwap extends SwapInterface {
 
   _initSwap() {
     this.decoder  = new InputDataDecoder(this.abi)
-    this.contract = new SwapApp.env.web3.eth.Contract(this.abi, this.address)
+    this.contract = new SwapApp.env.web3.puffs.Contract(this.abi, this.address)
   }
 
   async updateGas() {
     try {
-      await SwapApp.env.web3.eth.getGasPrice((err, _gasPrice) => {
+      await SwapApp.env.web3.puffs.getGasPrice((err, _gasPrice) => {
         const newGas = new BigNumber(String(_gasPrice)).plus(new BigNumber(String(1300000000)))
         this.gasPrice = Number(newGas)
       })
@@ -107,7 +107,7 @@ class PuffsSwap extends SwapInterface {
       const hash = `0x${secretHash.replace(/^0x/, '')}`
 
       const params = {
-        from: SwapApp.services.auth.accounts.eth.address,
+        from: SwapApp.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         value: newAmount,
         gasPrice: this.gasPrice,
@@ -145,7 +145,7 @@ class PuffsSwap extends SwapInterface {
 
       try {
         balance = await this.contract.methods.getBalance(ownerAddress).call({
-          from: SwapApp.services.auth.accounts.eth.address,
+          from: SwapApp.services.auth.accounts.puffs.address,
         })
       }
       catch (err) {
@@ -244,7 +244,7 @@ class PuffsSwap extends SwapInterface {
       const _secret = `0x${secret.replace(/^0x/, '')}`
 
       const params = {
-        from: SwapApp.services.auth.accounts.eth.address,
+        from: SwapApp.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
@@ -277,7 +277,7 @@ class PuffsSwap extends SwapInterface {
 
     return new Promise(async (resolve, reject) => {
       const params = {
-        from: SwapApp.services.auth.accounts.eth.address,
+        from: SwapApp.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
@@ -308,10 +308,10 @@ class PuffsSwap extends SwapInterface {
     return new Promise(async (resolve, reject) => {
       try {
         const secret = await this.contract.methods.getSecret(participantAddress).call({
-          from: SwapApp.services.auth.accounts.eth.address,
+          from: SwapApp.services.auth.accounts.puffs.address,
         })
 
-        debug('swap.core:swaps')('secret ethswap.js', secret)
+        debug('swap.core:swaps')('secret puffsswap.js', secret)
 
         const secretValue = secret &amp;&amp; !/^0x0+/.test(secret) ? secret : null
 
