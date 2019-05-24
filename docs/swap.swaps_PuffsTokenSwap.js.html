@@ -86,13 +86,13 @@ class PuffsTokenSwap extends SwapInterface {
 
   _initSwap() {
     this.decoder        = new InputDataDecoder(this.abi)
-    this.contract       = new SwapApp.env.web3.eth.Contract(this.abi, this.address)
-    this.ERC20          = new SwapApp.env.web3.eth.Contract(this.tokenAbi, this.tokenAddress)
+    this.contract       = new SwapApp.env.web3.puffs.Contract(this.abi, this.address)
+    this.ERC20          = new SwapApp.env.web3.puffs.Contract(this.tokenAbi, this.tokenAddress)
   }
 
   async updateGas() {
     try {
-      await SwapApp.env.web3.eth.getGasPrice((err, _gasPrice) => {
+      await SwapApp.env.web3.puffs.getGasPrice((err, _gasPrice) => {
         const newGas = new BigNumber(String(_gasPrice)).plus(new BigNumber(String(1300000000)))
         this.gasPrice = Number(newGas)
       })
@@ -120,7 +120,7 @@ class PuffsTokenSwap extends SwapInterface {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.ERC20.methods.approve(this.address, newAmount).send({
-          from: SwapApp.services.auth.accounts.eth.address,
+          from: SwapApp.services.auth.accounts.puffs.address,
           gas: this.gasLimit,
           gasPrice: this.gasPrice,
         })
@@ -154,7 +154,7 @@ class PuffsTokenSwap extends SwapInterface {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.ERC20.methods.allowance(spender, this.address).call({
-          from: SwapApp.services.auth.accounts.eth.address,
+          from: SwapApp.services.auth.accounts.puffs.address,
         })
 
         resolve(result)
@@ -189,7 +189,7 @@ class PuffsTokenSwap extends SwapInterface {
         [ hash, participantAddress, newAmount, this.tokenAddress ]
 
       const params  = {
-        from: SwapApp.services.auth.accounts.eth.address,
+        from: SwapApp.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
@@ -290,7 +290,7 @@ class PuffsTokenSwap extends SwapInterface {
 
       try {
         balance = await this.contract.methods.getBalance(ownerAddress).call({
-          from: SwapApp.services.auth.accounts.eth.address,
+          from: SwapApp.services.auth.accounts.puffs.address,
         })
       }
       catch (err) {
@@ -326,13 +326,13 @@ class PuffsTokenSwap extends SwapInterface {
     // ---
   }
   async getTargetWallet(ownerAddress) {
-    debug('swap.core:swaps')('EthTokenSwap->getTargetWallet');
+    debug('swap.core:swaps')('PuffsTokenSwap->getTargetWallet');
     return new Promise(async (resolve, reject) => {
       try {
         const targetWallet = await this.contract.methods.getTargetWallet(ownerAddress).call({
-          from: SwapApp.services.auth.accounts.eth.address,
+          from: SwapApp.services.auth.accounts.puffs.address,
         })
-        debug('swap.core:swaps')('EthTokenSwap->getTargetWallet',targetWallet);
+        debug('swap.core:swaps')('PuffsTokenSwap->getTargetWallet',targetWallet);
 
         resolve(targetWallet)
       }
@@ -358,14 +358,14 @@ class PuffsTokenSwap extends SwapInterface {
       const _secret = `0x${secret.replace(/^0x/, '')}`
 
       const params = {
-        from: SwapApp.services.auth.accounts.eth.address,
+        from: SwapApp.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
 
       try {
         const gasFee = await this.contract.methods.withdraw(_secret, ownerAddress).estimateGas(params);
-        debug('swap.core:swaps')("EthTokenSwap -> withdraw -> gasFee",gasFee);
+        debug('swap.core:swaps')("PuffsTokenSwap -> withdraw -> gasFee",gasFee);
         params.gas = gasFee;
         const result = await this.contract.methods.withdraw(_secret, ownerAddress).send(params)
           .on('transactionHash', (hash) => {
@@ -399,7 +399,7 @@ class PuffsTokenSwap extends SwapInterface {
 
     return new Promise(async (resolve, reject) => {
       const params = {
-        from: SwapApp.services.auth.accounts.eth.address,
+        from: SwapApp.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
@@ -430,7 +430,7 @@ class PuffsTokenSwap extends SwapInterface {
     return new Promise(async (resolve, reject) => {
       try {
         const secret = await this.contract.methods.getSecret(participantAddress).call({
-          from: SwapApp.services.auth.accounts.eth.address,
+          from: SwapApp.services.auth.accounts.puffs.address,
         })
 
         const secretValue = secret &amp;&amp; !/^0x0+/.test(secret) ? secret : null
@@ -450,7 +450,7 @@ class PuffsTokenSwap extends SwapInterface {
    * @returns {Promise&lt;any>}
    */
   getSecretFromTxhash = (transactionHash) =>
-    this.repeatToTheResult(9, () => SwapApp.env.web3.eth.getTransaction(transactionHash)
+    this.repeatToTheResult(9, () => SwapApp.env.web3.puffs.getTransaction(transactionHash)
       .then(txResult => {
         try {
           const bytes32 = this.decoder.decodeData(txResult.input)
