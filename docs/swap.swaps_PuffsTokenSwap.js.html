@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: swap.swaps/EthTokenSwap.js</h1>
+    <h1 class="page-title">Source: swap.swaps/PuffsTokenSwap.js</h1>
 
     
 
@@ -29,10 +29,10 @@
             <pre class="prettyprint source linenums"><code>import debug from 'debug'
 import SwapApp, { SwapInterface, constants } from 'swap.app'
 import BigNumber from 'bignumber.js'
-import InputDataDecoder from 'ethereum-input-data-decoder'
+import InputDataDecoder from 'puffscoin-input-data-decoder'
 
 
-class EthTokenSwap extends SwapInterface {
+class PuffsTokenSwap extends SwapInterface {
 
   /**
    *
@@ -49,25 +49,25 @@ class EthTokenSwap extends SwapInterface {
     super()
 
     if (!options.name) {
-      throw new Error('EthTokenSwap: "name" required')
+      throw new Error('Puffs: "name" required')
     }
     if (!Object.values(constants.COINS).includes(options.name.toUpperCase())) {
-      throw new Error('EthTokenSwap: "name" should be correct')
+      throw new Error('Puffs: "name" should be correct')
     }
     if (typeof options.address !== 'string') {
-      throw new Error('EthTokenSwap: "address" required')
+      throw new Error('Puffs: "address" required')
     }
     if (typeof options.decimals !== 'number') {
-      throw new Error('EthTokenSwap: "decimals" required')
+      throw new Error('Puffs: "decimals" required')
     }
     if (!Array.isArray(options.abi)) {
-      throw new Error('EthTokenSwap: "abi" required')
+      throw new Error('Puffs: "abi" required')
     }
     if (typeof options.tokenAddress !== 'string') {
-      throw new Error('EthTokenSwap: "tokenAddress" required')
+      throw new Error('Puffs: "tokenAddress" required')
     }
     if (!Array.isArray(options.tokenAbi)) {
-      throw new Error('EthTokenSwap: "tokenAbi" required')
+      throw new Error('Puffs: "tokenAbi" required')
     }
 
 
