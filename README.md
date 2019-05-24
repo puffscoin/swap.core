@@ -302,8 +302,8 @@ new SwapAuth({
 ```
 
 You can pass `null` or private key as value. If `null` passed new private key will be created, this key will be saved
-in `SwapApp.env.storage` by key `{network}:{coinName}:privateKey` - for network: `testnet` and coin `eth` it will be
-`testnet:eth:privateKey`
+in `SwapApp.env.storage` by key `{network}:{coinName}:privateKey` - for network: `puffsnet` and coin `puffs` it will be
+`puffsnet:puffs:privateKey`
 
 #### Public props
 
@@ -341,7 +341,7 @@ in `SwapApp.env.storage` by key `{network}:{coinName}:privateKey` - for network:
 
 #### * Extension
 
-To extend auth service with new coins need to create new file with coin name (use eth.js / btc.js as example) and
+To extend auth service with new coins need to create new file with coin name (use puffs.js / btc.js as example) and
 add coin name to swap.app/constants/COINS.js
 
 
