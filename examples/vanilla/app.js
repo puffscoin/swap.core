@@ -28,7 +28,7 @@ const config = {
     contract: '0xc87C2668F05803F60EF75b176eea0CCE80D0009C',
   },
 
-  eth: {
+  puffs: {
     contract : '0x830aef165b900fa7dc6b219f062c5784f6436d67', // 0xdbC2395f753968a93465487022B0e5D8730633Ec
   },
 
@@ -93,7 +93,7 @@ window.swap.core.app.setup({
   },
   services: [
     new window.swap.core.auth({
-      eth: '0xe8e73c3f411bce5ea0fe7fdd5da0b456488aa763f4bc638ca5f4a7d5ff55c01f', // or pass private key here
+      puffs: '0xe8e73c3f411bce5ea0fe7fdd5da0b456488aa763f4bc638ca5f4a7d5ff55c01f', // or pass private key here
       btc: 'cTD1xQMqG19968ZLetmHb9NJr5oaJBotbcRwvcaYZuJThvYEDEr9',
     }),
     new window.swap.core.room({
