@@ -4,14 +4,14 @@ const SwapAuth = require('swap.auth')
 const SwapRoom = require('swap.room')
 const SwapOrders = require('swap.orders')
 
-const { EthSwap, EthTokenSwap, BtcSwap, UsdtSwap, BchSwap, } = require('swap.swaps')
+const { PuffsSwap, PuffsTokenSwap, BtcSwap, UsdtSwap, BchSwap, } = require('swap.swaps')
 const {
-  ETH2BTC, BTC2ETH,
-  ETH2BCH, BCH2ETH,
-  ETHTOKEN2BTC, BTC2ETHTOKEN,
-  USDT2ETHTOKEN, ETHTOKEN2USDT } = require('swap.flows')
+  PUFFS2BTC, BTC2PUFFS,
+  PUFFS2BCH, BCH2PUFFS,
+  PUFFSTOKEN2BTC, BTC2PUFFSTOKEN,
+  USDT2PUFFSTOKEN, PUFFSTOKEN2USDT } = require('swap.flows')
 
-const eth = require('../instances/ethereum')
+const puffs = require('../instances/puffscoin')
 const btc = require('../instances/bitcoin')
 
 const Ipfs = require('ipfs')
@@ -25,7 +25,7 @@ const setupLocalStorage = require('./setupLocalStorage')
 const { LocalStorage } = require('node-localstorage')
 const sessionStorage = require('node-sessionstorage')
 
-module.exports = (config) => ({ account, contracts: { ETH, TOKEN }, ...custom }) => {
+module.exports = (config) => ({ account, contracts: { PUFFS, TOKEN }, ...custom }) => {
   config = {
     ...common,
     ...config,
@@ -48,7 +48,7 @@ module.exports = (config) => ({ account, contracts: { ETH, TOKEN }, ...custom })
 
   const storage = new LocalStorage(config.storageDir)
 
-  const web3    = eth[config.network]().core
+  const web3    = puffs[config.network]().core
   const bitcoin = btc[config.network]().core
 
   const tokens = (config.ERC20TOKENS || [])
@@ -70,7 +70,7 @@ module.exports = (config) => ({ account, contracts: { ETH, TOKEN }, ...custom })
     },
     services: [
       new SwapAuth({
-        eth: account,
+        puffs: account,
         btc: null,
         ...config.swapAuth
       }),
@@ -79,47 +79,47 @@ module.exports = (config) => ({ account, contracts: { ETH, TOKEN }, ...custom })
     ],
 
     swaps: [
-      new EthSwap(config.ethSwap(ETH)),
+      new PuffsSwap(config.puffsSwap(PUFFS)),
       new BtcSwap(config.btcSwap()),
       config.network === 'mainnet'
         ? new UsdtSwap(config.usdtSwap())
         : null,
-      new EthTokenSwap(config.noxonTokenSwap(TOKEN)),
-      new EthTokenSwap(config.swapTokenSwap(TOKEN)),
+      new PuffsTokenSwap(config.noxonTokenSwap(TOKEN)),
+      new PuffsTokenSwap(config.swapTokenSwap(TOKEN)),
       ...(
         (config.swaps || [])
       ),
       ...(
-        tokens.map(_token => new EthTokenSwap(tokenSwap(_token)()))
+        tokens.map(_token => new PuffsTokenSwap(tokenSwap(_token)()))
       )
     ]
     .filter(a=>!!a),
 
     flows: [
-      ETH2BTC,
-      BTC2ETH,
-      ETHTOKEN2BTC(constants.COINS.noxon),
-      BTC2ETHTOKEN(constants.COINS.noxon),
-      ETHTOKEN2BTC(constants.COINS.swap),
-      BTC2ETHTOKEN(constants.COINS.swap),
-      ETHTOKEN2USDT(constants.COINS.noxon),
-      USDT2ETHTOKEN(constants.COINS.noxon),
-      ETHTOKEN2USDT(constants.COINS.swap),
-      USDT2ETHTOKEN(constants.COINS.swap),
+      PUFFS2BTC,
+      BTC2PUFFS,
+      PUFFSTOKEN2BTC(constants.COINS.noxon),
+      BTC2PUFFSTOKEN(constants.COINS.noxon),
+      PUFFSTOKEN2BTC(constants.COINS.swap),
+      BTC2PUFFSTOKEN(constants.COINS.swap),
+      PUFFSTOKEN2USDT(constants.COINS.noxon),
+      USDT2PUFFSTOKEN(constants.COINS.noxon),
+      PUFFSTOKEN2USDT(constants.COINS.swap),
+      USDT2PUFFSTOKEN(constants.COINS.swap),
       ...(config.flows || []),
       ...((
           [].concat.apply([],
             tokens.map(({ name }) => ([
-              ETHTOKEN2USDT(name),
-              USDT2ETHTOKEN(name),
-              ETHTOKEN2BTC(name),
-              BTC2ETHTOKEN(name),
+              PUFFSTOKEN2USDT(name),
+              USDT2PUFFSTOKEN(name),
+              PUFFSTOKEN2BTC(name),
+              BTC2PUFFSTOKEN(name),
             ]))
           )
         ) || []
       )
-      // ETH2BCH,
-      // BCH2ETH,
+      // PUFFS2BCH,
+      // BCH2PUFFS,
     ],
   }
 }
