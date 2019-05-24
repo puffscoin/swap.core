@@ -447,7 +447,7 @@ Provides the workflow with orders - create, store, update, remove orders.
       <td>
 <pre>
 create({
-  buyCurrency: 'ETH',
+  buyCurrency: 'PUFFS',
   sellCurrency: 'BTC',
   buyAmount: 10,
   sellAmount: 1,
