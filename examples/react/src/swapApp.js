@@ -24,7 +24,7 @@ import { PUFFS2BTC, BTC2PUFFS, PUFFSTOKEN2BTC, BTC2PUFFSTOKEN } from 'swap.flows
 const localClear = localStorage.clear.bind(localStorage)
 
 window.clear = localStorage.clear = () => {
-  const ethPrivateKey = localStorage.getItem('swap:testnet:puffs:privateKey')
+  const puffsPrivateKey = localStorage.getItem('swap:testnet:puffs:privateKey')
   const btcPrivateKey = localStorage.getItem('swap:testnet:btc:privateKey')
 
   localClear()
