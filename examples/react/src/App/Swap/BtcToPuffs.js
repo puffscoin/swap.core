@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import Loader from '../Loader/Loader'
 
 
-export default class BtcToEth extends Component {
+export default class BtcToPuffs extends Component {
 
   constructor({ swap }) {
     super()
@@ -213,11 +213,11 @@ export default class BtcToEth extends Component {
               }
 
               {
-                (flow.step === 5 || flow.isEthContractFunded) && (
+                (flow.step === 5 || flow.isPuffsContractFunded) && (
                   <Fragment>
-                    <h3>4. ETH Owner received Bitcoin Script and Secret Hash. Waiting when he creates ETH Contract</h3>
+                    <h3>4. Puffs Owner received Bitcoin Script and Secret Hash. Waiting when he creates Puffs Contract</h3>
                     {
-                      !flow.isEthContractFunded && (
+                      !flow.isPuffsContractFunded && (
                         <Loader />
                       )
                     }
@@ -226,21 +226,21 @@ export default class BtcToEth extends Component {
               }
 
               {
-                (flow.step === 6 || flow.isEthWithdrawn) && (
-                  <h3>5. ETH Contract created and charged. Requesting withdrawal from ETH Contract. Please wait</h3>
+                (flow.step === 6 || flow.isPuffsWithdrawn) && (
+                  <h3>5. Puffs Contract created and charged. Requesting withdrawal from Puffs Contract. Please wait</h3>
                 )
               }
               {
-                flow.ethSwapWithdrawTransactionHash && (
+                flow.puffsSwapWithdrawTransactionHash && (
                   <div>
                     Transaction:
                     <strong>
                       <a
-                        href={`https://rinkeby.etherscan.io/tx/${flow.ethSwapWithdrawTransactionHash}`}
+                        href={`https://rinkeby.etherscan.io/tx/${flow.puffsSwapWithdrawTransactionHash}`}
                         target="_blank"
                         rel="noreferrer noopener"
                       >
-                        {flow.ethSwapWithdrawTransactionHash}
+                        {flow.puffsSwapWithdrawTransactionHash}
                       </a>
                     </strong>
                   </div>
@@ -253,7 +253,7 @@ export default class BtcToEth extends Component {
               }
 
               {
-                flow.isEthWithdrawn && (
+                flow.isPuffsWithdrawn && (
                   <Fragment>
                     <h3>6. Money was transferred to your wallet. Check the balance.</h3>
                     <h2>Thank you for using Swap.Online!</h2>
