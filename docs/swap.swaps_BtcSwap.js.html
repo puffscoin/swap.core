@@ -43,13 +43,13 @@ class BtcSwap extends SwapInterface {
     super()
 
     if (typeof options.fetchBalance !== 'function') {
-      throw new Error('EthSwap: "fetchBalance" required')
+      throw new Error('PuffsSwap: "fetchBalance" required')
     }
     if (typeof options.fetchUnspents !== 'function') {
-      throw new Error('EthSwap: "fetchUnspents" required')
+      throw new Error('PuffsSwap: "fetchUnspents" required')
     }
     if (typeof options.broadcastTx !== 'function') {
-      throw new Error('EthSwap: "broadcastTx" required')
+      throw new Error('PuffsSwap: "broadcastTx" required')
     }
 
     this._swapName      = constants.COINS.btc
