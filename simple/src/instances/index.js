@@ -1,7 +1,7 @@
 const bitcoin = require('./bitcoin')
-const ethereum = require('./ethereum')
+const puffscoin = require('./puffscoin')
 
 module.exports = {
   bitcoin,
-  ethereum,
+  puffscoin,
 }
