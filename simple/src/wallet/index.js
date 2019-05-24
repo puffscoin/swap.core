@@ -1,14 +1,14 @@
-const { bitcoin, ethereum } = require('../instances')
+const { bitcoin, puffscoin } = require('../instances')
 const debug = require('debug')('swap.core:simple:wallet')
 
 const BLOCKCHAININFO = isMain => isMain ? `https://blockchain.info` : `https://testnet.blockchain.info`
-const ETHERSCANIO = isMain => isMain ? `https://etherscan.io` : `https://rinkeby.etherscan.io`
+const PUFFSSCAN = isMain => isMain ? `https://puffsscan.leafycauldronapothecary.com` : `https://puffsscan.leafycauldronapothecary.com`
 
 class Wallet {
   constructor(app, constants, config) {
     this.id = config.id
     this.network = app.network
-    this.ethereum = ethereum
+    this.puffscoin = puffscoin
     this.bitcoin = bitcoin
     this.swapApp = app
     this.constants = constants
@@ -22,7 +22,7 @@ class Wallet {
         const account = this.auth.accounts.btc
         return await this.bitcoin.sendTransaction({ account, to, value })
       case 'eth':
-        return await this.ethereum.sendTransaction({to, value})
+        return await this.puffscoin.sendTransaction({to, value})
       default:
         return Promise.reject('not implemented')
     }
@@ -45,7 +45,7 @@ class Wallet {
 
     const addresses = currencies.reduce((obj, symbol) => {
       const { address } = (symbol == 'BTC' || symbol == 'BCH' || symbol == 'USDT')
-        ? data.btc : data.eth
+        ? data.btc : data.puffs
 
       return {
         ...obj,
@@ -76,7 +76,7 @@ class Wallet {
 
   fetchBalance(symbol) {
     const data = this.auth.getPublicData()
-    const account = symbol == 'BTC' || symbol == 'BCH' || symbol == 'USDT' ? data.btc : data.eth
+    const account = symbol == 'BTC' || symbol == 'BCH' || symbol == 'USDT' ? data.btc : data.puffs
     const instance = this.swapApp.swaps[symbol]
 
     return instance ? instance.fetchBalance(account.address) : '-'
@@ -96,7 +96,7 @@ class Wallet {
 
   getCore() {
     return {
-      eth: this.ethereum.core,
+      puffs: this.puffscoin.core,
       btc: this.bitcoin.core,
     }
   }
@@ -106,7 +106,7 @@ class Wallet {
       id: this.id,
       network: this.network,
       mainnet: this.swapApp.isMainNet(),
-      'etherscan.io': `${ETHERSCANIO(this.swapApp.isMainNet())}/address/${this.auth.accounts.eth.address}`,
+      'puffsscan.leafycauldronapothecary.com': `${ETHERSCANIO(this.swapApp.isMainNet())}/address/${this.auth.accounts.puffs.address}`,
       'blockchain.info': `${BLOCKCHAININFO(this.swapApp.isMainNet())}/address/${this.auth.accounts.btc.getAddress()}`,
       room: this.swapApp.services.room.roomName,
       ...this.auth.getPublicData(),
@@ -114,15 +114,15 @@ class Wallet {
   }
 
   async detailedView() {
-    const gasPrice = await this.ethereum.core.eth.getGasPrice()
-    const gasLimit = 3e6 // TODO sync with EthSwap.js
+    const gasPrice = await this.puffscoin.core.puffs.getGasPrice()
+    const gasLimit = 3e6 // TODO sync with PuffsSwap.js
     const btcFee = 15000 // TODO sync with BtcSwap.js and bitcoin instance
 
     return {
-      eth: {
+      puffs: {
         gasPrice,
         gasLimit,
-        // ...ethereum.core,
+        // ...puffscoin.core,
       },
       btc: {
         fee: btcFee,
