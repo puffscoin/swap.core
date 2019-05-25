@@ -4,13 +4,13 @@ import SwapApp, { constants } from 'swap.app'
 import { Flow } from 'swap.swap'
 
 
-class ETH2LTC extends Flow {
+class PUFFS2LTC extends Flow {
 
   static getName() {
     return `${this.getFromName()}2${this.getToName()}`
   }
   static getFromName() {
-    return constants.COINS.eth
+    return constants.COINS.Puffs
   }
   static getToName() {
     return constants.COINS.ltc
@@ -18,28 +18,28 @@ class ETH2LTC extends Flow {
   constructor(swap) {
     super(swap)
 
-    this._flowName = ETH2LTC.getName()
+    this._flowName = PUFFS2LTC.getName()
 
     this.stepNumbers = {
       'sign': 1,
       'wait-lock-ltc': 2,
       'verify-script': 3,
       'sync-balance': 4,
-      'lock-eth': 5,
-      'wait-withdraw-eth': 6, // aka getSecret
+      'lock-puffs': 5,
+      'wait-withdraw-puffs': 6, // aka getSecret
       'withdraw-ltc': 7,
       'finish': 8,
       'end': 9
     }
 
-    this.ethSwap = swap.participantSwap
+    this.puffsSwap = swap.participantSwap
     this.ltcSwap = swap.ownerSwap
 
-    if (!this.ethSwap) {
-      throw new Error('LTC2ETH: "ethSwap" of type object required')
+    if (!this.puffsSwap) {
+      throw new Error('LTC2PUFFS: "puffsSwap" of type object required')
     }
     if (!this.ltcSwap) {
-      throw new Error('LTC2ETH: "ltcSwap" of type object required')
+      throw new Error('LTC2PUFFS: "ltcSwap" of type object required')
     }
 
     this.state = {
@@ -59,13 +59,13 @@ class ETH2LTC extends Flow {
       balance: null,
 
       ltcScriptCreatingTransactionHash: null,
-      ethSwapCreationTransactionHash: null,
+      puffsSwapCreationTransactionHash: null,
 
-      isEthContractFunded: false,
+      isPuffsContractFunded: false,
 
       secret: null,
 
-      isEthWithdrawn: false,
+      isPuffsWithdrawn: false,
       isLtcWithdrawn: false,
 
       refundTransactionHash: null,
@@ -123,7 +123,7 @@ class ETH2LTC extends Flow {
         this.syncBalance()
       },
 
-      // 5. Create ETH Contract
+      // 5. Create PUFFS Contract
 
       async () => {
         const { participant, buyAmount, sellAmount } = flow.swap
@@ -145,22 +145,22 @@ class ETH2LTC extends Flow {
         }
 
         const swapData = {
-          participantAddress:   participant.eth.address,
+          participantAddress:   participant.puffs.address,
           secretHash:           flow.state.secretHash,
           amount:               sellAmount,
         }
 
         try {
-          await this.ethSwap.create(swapData, (hash) => {
+          await this.puffsSwap.create(swapData, (hash) => {
             flow.swap.room.sendMessage({
-              event: 'create eth contract',
+              event: 'create PUFFS contract',
               data: {
-                ethSwapCreationTransactionHash: hash,
+                puffsSwapCreationTransactionHash: hash,
               },
             })
 
             flow.setState({
-              ethSwapCreationTransactionHash: hash,
+              puffsSwapCreationTransactionHash: hash,
             })
           })
         } catch (err) {
@@ -176,30 +176,30 @@ class ETH2LTC extends Flow {
         debug('swap.core:flow')(`finish step`)
 
         flow.finishStep({
-          isEthContractFunded: true,
-        }, { step: 'lock-eth' })
+          isPuffsContractFunded: true,
+        }, { step: 'lock-puffs' })
       },
 
       // 6. Wait participant withdraw
 
       () => {
-        flow.swap.room.once('ethWithdrawTxHash', async ({ ethSwapWithdrawTransactionHash }) => {
+        flow.swap.room.once('puffsWithdrawTxHash', async ({ puffsSwapWithdrawTransactionHash }) => {
           flow.setState({
-            ethSwapWithdrawTransactionHash,
+            puffsSwapWithdrawTransactionHash,
           })
 
-          const secret = await flow.ethSwap.getSecretFromTxhash(ethSwapWithdrawTransactionHash)
+          const secret = await flow.puffsSwap.getSecretFromTxhash(puffsSwapWithdrawTransactionHash)
 
-          if (!flow.state.isEthWithdrawn && secret) {
+          if (!flow.state.isPuffsWithdrawn && secret) {
             flow.finishStep({
-              isEthWithdrawn: true,
+              isPuffsWithdrawn: true,
               secret,
-            }, { step: 'wait-withdraw-eth' })
+            }, { step: 'wait-withdraw-puffs' })
           }
         })
 
         flow.swap.room.sendMessage({
-          event: 'request ethWithdrawTxHash',
+          event: 'request puffsWithdrawTxHash',
         })
       },
 
@@ -250,11 +250,11 @@ class ETH2LTC extends Flow {
     const { participant } = this.swap
 
     const swapData = {
-      ownerAddress:       this.app.services.auth.accounts.eth.address,
-      participantAddress: participant.eth.address
+      ownerAddress:       this.app.services.auth.accounts.puffs.address,
+      participantAddress: participant.puffs.address
     }
 
-    return this.ethSwap.checkSwapExists(swapData)
+    return this.puffsSwap.checkSwapExists(swapData)
   }
 
   async sign() {
@@ -310,7 +310,7 @@ class ETH2LTC extends Flow {
       isBalanceFetching: true,
     })
 
-    const balance = await this.ethSwap.fetchBalance(this.app.services.auth.accounts.eth.address)
+    const balance = await this.puffsSwap.fetchBalance(this.app.services.auth.accounts.puffs.address)
     const isEnoughMoney = sellAmount.isLessThanOrEqualTo(balance)
 
     if (isEnoughMoney) {
@@ -332,8 +332,8 @@ class ETH2LTC extends Flow {
   tryRefund() {
     const { participant } = this.swap
 
-    return this.ethSwap.refund({
-      participantAddress: participant.eth.address,
+    return this.puffsSwap.refund({
+      participantAddress: participant.puffs.address,
     }, (hash) => {
       this.setState({
         refundTransactionHash: hash,
@@ -352,7 +352,7 @@ class ETH2LTC extends Flow {
   }
 
   async tryWithdraw(_secret) {
-  const { secret, secretHash, isEthWithdrawn, isLtcWithdrawn, ltcScriptValues } = this.state
+  const { secret, secretHash, isPuffsWithdrawn, isLtcWithdrawn, ltcScriptValues } = this.state
     if (!_secret)
       throw new Error(`Withdrawal is automatic. For manual withdrawal, provide a secret`)
 
@@ -402,4 +402,4 @@ class ETH2LTC extends Flow {
 }
 
 
-export default ETH2LTC
+export default PUFFS2LTC
