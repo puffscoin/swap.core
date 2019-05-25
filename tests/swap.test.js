@@ -6,7 +6,7 @@ jest.setTimeout(30000)
 const orders = app.services.orders
 
 const _ORDER = {
-  buyCurrency: 'ETH',
+  buyCurrency: 'PUFFS',
   sellCurrency: 'BTC',
   buyAmount: 20,
   sellAmount: "1",
