@@ -6,7 +6,7 @@ import { Flow } from 'swap.swap'
 
 export default (tokenName) => {
 
-  class ETHTOKEN2USDT extends Flow {
+  class PUFFSTOKEN2USDT extends Flow {
 
     static getName() {
       return `${this.getFromName()}2${this.getToName()}`
@@ -20,31 +20,31 @@ export default (tokenName) => {
     constructor(swap) {
       super(swap)
 
-      this._flowName = ETHTOKEN2USDT.getName()
+      this._flowName = PUFFSTOKEN2USDT.getName()
 
-      this.ethTokenSwap = this.app.swaps[tokenName.toUpperCase()]
+      this.puffsTokenSwap = this.app.swaps[tokenName.toUpperCase()]
       this.usdtSwap      = this.app.swaps[constants.COINS.usdt]
 
       this.myBtcAddress = this.app.services.auth.accounts.btc.getAddress()
-      this.myEthAddress = this.app.services.auth.accounts.eth.address
+      this.myPuffsAddress = this.app.services.auth.accounts.puffs.address
 
       this.stepNumbers = {
         'sign': 1,
         'wait-lock-usdt': 2,
         'verify-script': 3,
         'sync-balance': 4,
-        'lock-eth': 5,
-        'wait-withdraw-eth': 6, // aka getSecret
+        'lock-puffs': 5,
+        'wait-withdraw-puffs': 6, // aka getSecret
         'withdraw-usdt': 7,
         'finish': 8,
         'end': 9
       }
 
-      if (!this.ethTokenSwap) {
-        throw new Error('ETHTOKEN2USDT: "ethTokenSwap" of type object required')
+      if (!this.puffsTokenSwap) {
+        throw new Error('PUFFSTOKEN2USDT: "puffsTokenSwap" of type object required')
       }
       if (!this.usdtSwap) {
-        throw new Error('ETHTOKEN2USDT: "usdtSwap" of type object required')
+        throw new Error('PUFFSTOKEN2USDT: "usdtSwap" of type object required')
       }
 
       this.state = {
@@ -65,14 +65,14 @@ export default (tokenName) => {
 
         usdtFundingTransactionHash: null,
 
-        ethSwapCreationTransactionHash: null,
+        puffsSwapCreationTransactionHash: null,
         usdtSwapWithdrawTransactionHash: null,
 
-        isEthContractFunded: false,
+        isPuffsContractFunded: false,
 
         secret: null,
 
-        isEthWithdrawn: false,
+        isPuffsWithdrawn: false,
         isBtcWithdrawn: false,
 
         refundTransactionHash: null,
@@ -127,11 +127,11 @@ export default (tokenName) => {
           this.syncBalance()
         },
 
-        // 5. Create ETH Contract
+        // 5. Create PUFFS Contract
 
         async () => {
           const { participant, buyAmount, sellAmount } = flow.swap
-          let ethSwapCreationTransactionHash
+          let puffsSwapCreationTransactionHash
 
           // TODO move this somewhere!
           const utcNow = () => Math.floor(Date.now() / 1000)
@@ -155,14 +155,14 @@ export default (tokenName) => {
           }
 
           const swapData = {
-            participantAddress:   participant.eth.address,
+            participantAddress:   participant.puffs.address,
             secretHash:           flow.state.secretHash,
             amount:               sellAmount,
           }
 
           debug('swap.core:flow')('approve')
 
-          await flow.ethTokenSwap.approve({
+          await flow.puffsTokenSwap.approve({
             amount: sellAmount,
           }, hash => {
             debug('swap.core:flow')('approve tx hash', hash)
@@ -170,25 +170,25 @@ export default (tokenName) => {
 
           debug('swap.core:flow')('create swap')
 
-          await flow.ethTokenSwap.create(swapData, (hash) => {
-            ethSwapCreationTransactionHash = hash
+          await flow.puffsTokenSwap.create(swapData, (hash) => {
+            puffsSwapCreationTransactionHash = hash
 
             debug('swap.core:flow')('create swap tx hash', hash)
 
             flow.setState({
-              ethSwapCreationTransactionHash: hash,
+              puffsSwapCreationTransactionHash: hash,
             })
           })
 
           flow.swap.room.sendMessage({
-            event: 'create eth contract',
+            event: 'create puffs contract',
             data: {
-              ethSwapCreationTransactionHash,
+              puffsSwapCreationTransactionHash,
             }
           })
 
           flow.finishStep({
-            isEthContractFunded: true,
+            isPuffsContractFunded: true,
           })
         },
 
@@ -199,8 +199,8 @@ export default (tokenName) => {
 
           const checkSecretExist = async () => {
             try {
-              const secret = await flow.ethTokenSwap.getSecret({
-                participantAddress: participant.eth.address,
+              const secret = await flow.puffsTokenSwap.getSecret({
+                participantAddress: participant.puffs.address,
               })
 
               if (secret) {
@@ -212,8 +212,8 @@ export default (tokenName) => {
 
                 flow.finishStep({
                   secret,
-                  isEthWithdrawn: true,
-                }, { step: 'wait-withdraw-eth' })
+                  isPuffsWithdrawn: true,
+                }, { step: 'wait-withdraw-puffs' })
               }
             }
             catch (err) { console.error(err) }
@@ -221,7 +221,7 @@ export default (tokenName) => {
 
           const checkSecretTimer = setInterval(checkSecretExist, 20 * 1000)
 
-          flow.swap.room.once('finish eth withdraw', () => {
+          flow.swap.room.once('finish puffs withdrawl', () => {
             checkSecretExist()
           })
         },
@@ -285,11 +285,11 @@ export default (tokenName) => {
       const { participant } = this.swap
 
       const swapData = {
-        ownerAddress:       this.app.services.auth.accounts.eth.address,
-        participantAddress: participant.eth.address
+        ownerAddress:       this.app.services.auth.accounts.puffs.address,
+        participantAddress: participant.puffs.address
       }
 
-      return this.ethTokenSwap.checkSwapExists(swapData)
+      return this.puffsTokenSwap.checkSwapExists(swapData)
     }
 
     async sign() {
@@ -307,7 +307,7 @@ export default (tokenName) => {
           event: 'swap exists'
         })
         // TODO go to 6 step automatically here
-        throw new Error(`Cannot sign: swap with ${participant.eth.address} already exists! Please refund it or drop ${this.swap.id}`)
+        throw new Error(`Cannot sign: swap with ${participant.puffs.address} already exists! Please refund it or drop ${this.swap.id}`)
         return false
       }
 
@@ -351,7 +351,7 @@ export default (tokenName) => {
         isBalanceFetching: true,
       })
 
-      const balance = await this.ethTokenSwap.fetchBalance(this.app.services.auth.accounts.eth.address)
+      const balance = await this.puffsTokenSwap.fetchBalance(this.app.services.auth.accounts.puffs.address)
       const isEnoughMoney = sellAmount.isLessThanOrEqualTo(balance)
 
       if (isEnoughMoney) {
@@ -371,7 +371,7 @@ export default (tokenName) => {
     }
 
     async tryWithdraw(_secret) {
-      const { secret, secretHash, isEthWithdrawn, isBtcWithdrawn, usdtScriptValues } = this.state
+      const { secret, secretHash, isPuffsWithdrawn, isBtcWithdrawn, usdtScriptValues } = this.state
 
       if (!_secret)
         throw new Error(`Withdrawal is automatic. For manual withdrawal, provide a secret`)
@@ -432,8 +432,8 @@ export default (tokenName) => {
         debug('swap.core:flow')('TRYING REFUND!')
 
         try {
-          await this.ethTokenSwap.refund({
-            participantAddress: participant.eth.address,
+          await this.puffsTokenSwap.refund({
+            participantAddress: participant.puffs.address,
           }, (hash) => {
             this.setState({
               refundTransactionHash: hash,
@@ -457,7 +457,7 @@ export default (tokenName) => {
 
       if (!secret) {
         try {
-          secret = await this.ethTokenSwap.getSecret(data)
+          secret = await this.puffsTokenSwap.getSecret(data)
         }
         catch (err) {
           console.error('Can\'t receive secret from contract')
@@ -486,5 +486,5 @@ export default (tokenName) => {
     }
   }
 
-  return ETHTOKEN2USDT
+  return PUFFSTOKEN2USDT
 }
