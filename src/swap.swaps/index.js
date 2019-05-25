@@ -1,15 +1,15 @@
-import EthSwap from './EthSwap'
-import EthTokenSwap from './EthTokenSwap'
+import PuffsSwap from './PuffsSwap'
+import PuffsTokenSwap from './PuffsTokenSwap'
 import BtcSwap from './BtcSwap'
 import LtcSwap from './LtcSwap'
 import EosSwap from './EosSwap'
 import UsdtSwap from './UsdtSwap'
 
 export {
-  EthSwap,
+  PuffsSwap,
   BtcSwap,
   LtcSwap,
-  EthTokenSwap,
+  PuffsTokenSwap,
   EosSwap,
   UsdtSwap,
 }
