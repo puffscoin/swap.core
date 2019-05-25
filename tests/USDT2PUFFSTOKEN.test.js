@@ -2,8 +2,8 @@ import SwapApp, { SwapInterface } from 'swap.app'
 import { Bitcoin } from 'examples/react/src/instances/bitcoin'
 import bitcoin from 'bitcoinjs-lib'
 import Swap from 'swap.swap'
-import { USDT2ETHTOKEN, ETHTOKEN2USDT } from 'swap.flows'
-import { UsdtSwap, EthTokenSwap } from 'swap.swaps'
+import { USDT2PUFFSTOKEN, PUFFSTOKEN2USDT } from 'swap.flows'
+import { UsdtSwap, PuffsTokenSwap } from 'swap.swaps'
 import fixtures from './fixtures'
 
 jest.mock('swap.app')
@@ -46,12 +46,12 @@ const _ORDER = {
 
   'owner': {
     peer: 'Qmaaa',
-    eth: { address: '0xfafafafafafafafafafafafafafafafafafafafa' },
+    puffs: { address: '0xfafafafafafafafafafafafafafafafafafafafa' },
     btc: { address: '1Kf1dtmZGUoy482yXeoUuhfAJVKyD9JpWS', publicKey: '0386fbd9bd29d36e07dff34bc09173fb3035fb418ffbcc13c6d06334c1ff2e5422' },
   },
   'participant': {
     peer: 'Qmbbb',
-    eth: { address: '0xdadadadadadadadadadadadadadadadadadadada' },
+    puffs: { address: '0xdadadadadadadadadadadadadadadadadadadada' },
     btc: { address: '1PdhGkf1spScMZtkAFGUaE7q7mX2X71Rr5', publicKey: '033a117cc4d164984c1e8fb58f39f08a17a2e615d77d8f7a35a7d9cdeb9e93ef4c' },
   },
 
@@ -62,10 +62,10 @@ const _ORDER = {
 }
 
 beforeAll(() => {
-  app.flows['USDT2SWAP'] = USDT2ETHTOKEN('SWAP')
-  app.flows['SWAP2USDT'] = ETHTOKEN2USDT('SWAP')
+  app.flows['USDT2SWAP'] = USDT2PUFFSTOKEN('SWAP')
+  app.flows['SWAP2USDT'] = PUFFSTOKEN2USDT('SWAP')
 
-  app.swaps['SWAP'] = new EthTokenSwap({
+  app.swaps['SWAP'] = new PuffsTokenSwap({
     name: 'SWAP',
     fetchBalance: jest.fn(),
     decimals: 18,
@@ -133,33 +133,33 @@ describe('full flow', () => {
     // decode broadcasted tx and check
   })
 
-  xtest('does not withdraw ETH when swap doesnt exist', async () => {
-    swap.flow.ethTokenSwap.contract.state.swapExists = false
+  xtest('does not withdraw PUFFS when swap doesnt exist', async () => {
+    swap.flow.puffsTokenSwap.contract.state.swapExists = false
 
-    app.services.room.emit('create eth contract', { ethSwapCreationTransactionHash: '555abcdef333', ..._roomId })
+    app.services.room.emit('create puffs contract', { puffsSwapCreationTransactionHash: '555abcdef333', ..._roomId })
 
     await timeout(100)
 
-    expect(swap.flow.ethTokenSwap.contract.methods.withdraw).not.toHaveBeenCalled()
+    expect(swap.flow.puffsTokenSwap.contract.methods.withdraw).not.toHaveBeenCalled()
 
   })
 
-  xtest('withdraws ETH if balance is locked', async () => {
-    swap.flow.ethTokenSwap.contract.state.swapExists = true
+  xtest('withdraws puffs if balance is locked', async () => {
+    swap.flow.puffsTokenSwap.contract.state.swapExists = true
 
     swap.flow.steps[6]() // not for production use
-    app.services.room.emit('create eth contract', { ethSwapCreationTransactionHash: '555abcdef333', ..._roomId })
+    app.services.room.emit('create puffs contract', { puffsSwapCreationTransactionHash: '555abcdef333', ..._roomId })
 
     await timeout(100)
 
-    expect(swap.flow.ethTokenSwap.contract.methods.withdraw).toHaveBeenCalled()
-    expect(swap.flow.ethTokenSwap.contract.methods.withdraw)
-      .toHaveBeenCalledWith(`0x${secret}`, _ORDER.participant.eth.address)
+    expect(swap.flow.puffsTokenSwap.contract.methods.withdraw).toHaveBeenCalled()
+    expect(swap.flow.puffsTokenSwap.contract.methods.withdraw)
+      .toHaveBeenCalledWith(`0x${secret}`, _ORDER.participant.puffs.address)
 
-    swap.flow.ethTokenSwap.contract.methods.withdraw().emitter.emit('transactionHash', '0xaaabbbbddd')
+    swap.flow.puffsTokenSwap.contract.methods.withdraw().emitter.emit('transactionHash', '0xaaabbbbddd')
 
     await timeout(100)
 
-    expect(swap.flow.state.ethSwapWithdrawTransactionHash).toEqual('0xaaabbbbddd')
+    expect(swap.flow.state.puffsSwapWithdrawTransactionHash).toEqual('0xaaabbbbddd')
   })
 })
