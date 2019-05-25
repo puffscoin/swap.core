@@ -1,7 +1,7 @@
 import _debug from 'debug'
 import SwapApp, { constants, SwapInterface, util } from 'swap.app'
 import BigNumber from 'bignumber.js'
-import InputDataDecoder from 'ethereum-input-data-decoder'
+import InputDataDecoder from 'puffscoin-input-data-decoder'
 const debug = _debug('swap.core:swaps')
 
 class PuffsSwap extends SwapInterface {
