@@ -166,14 +166,14 @@ class SwapRoom extends ServiceInterface {
 
   _recoverMessage(message, sign) {
     const hash      = this.app.env.web3.utils.soliditySha3(JSON.stringify(message))
-    const recover   = this.app.env.web3.eth.accounts.recover(hash, sign.signature)
+    const recover   = this.app.env.web3.puffs.accounts.recover(hash, sign.signature)
 
     return recover
   }
 
   _signMessage(message) {
     const hash  = this.app.env.web3.utils.soliditySha3(JSON.stringify(message))
-    const sign  = this.app.env.web3.eth.accounts.sign(hash, this.app.services.auth.accounts.eth.privateKey)
+    const sign  = this.app.env.web3.puffs.accounts.sign(hash, this.app.services.auth.accounts.eth.privateKey)
 
     return sign
   }
@@ -268,7 +268,7 @@ class SwapRoom extends ServiceInterface {
     const sign = this._signMessage(data)
 
     this.connection.sendTo(peer, JSON.stringify({
-      fromAddress: this.app.services.auth.accounts.eth.address,
+      fromAddress: this.app.services.auth.accounts.puffs.address,
       data,
       event,
       sign,
@@ -282,7 +282,7 @@ class SwapRoom extends ServiceInterface {
     const sign = this._signMessage(data)
 
     this.connection.broadcast(JSON.stringify({
-      fromAddress: this.app.services.auth.accounts.eth.address,
+      fromAddress: this.app.services.auth.accounts.puffs.address,
       data,
       event,
       sign,
