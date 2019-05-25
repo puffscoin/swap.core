@@ -3,7 +3,7 @@ import Pair from 'swap.orders/Pair'
 import PAIR_TYPES from 'swap.app/constants/PAIR_TYPES'
 
 const _ORDER = {
-  'buyCurrency': 'ETH',
+  'buyCurrency': 'PUFFS',
   'sellCurrency': 'BTC',
   'buyAmount': '2.6666666666666665',
   'sellAmount': '0.18666733', // bitcoin only has 8 decimals
@@ -12,11 +12,11 @@ const _ORDER = {
 
 const _PAIR = {
   type: PAIR_TYPES.BID,
-  ticker: 'ETH-BTC',
+  ticker: 'PUFFS-BTC',
   price: '0.07000024875000000438',
   amount: '2.6666666666666665',
   total: '0.18666733000000000001329187499999927',
-  main: 'ETH',
+  main: 'PUFFS',
   base: 'BTC',
 }
 
