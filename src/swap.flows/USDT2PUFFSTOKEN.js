@@ -6,7 +6,7 @@ import { Flow } from 'swap.swap'
 
 export default (tokenName) => {
 
-  class USDT2ETHTOKEN extends Flow {
+  class USDT2PUFFSTOKEN extends Flow {
 
     static getName() {
       return `${this.getFromName()}2${this.getToName()}`
@@ -22,28 +22,28 @@ export default (tokenName) => {
 
       this._flowName = USDT2ETHTOKEN.getName()
 
-      this.ethTokenSwap = this.app.swaps[tokenName.toUpperCase()]
+      this.puffsTokenSwap = this.app.swaps[tokenName.toUpperCase()]
       this.usdtSwap      = this.app.swaps[constants.COINS.usdt]
 
       this.myBtcAddress = this.app.services.auth.accounts.btc.getAddress()
-      this.myEthAddress = this.app.services.auth.accounts.eth.address
+      this.myPuffsAddress = this.app.services.auth.accounts.puffs.address
 
       this.stepNumbers = {
         'sign': 1,
         'submit-secret': 2,
         'sync-balance': 3,
         'lock-usdt': 4,
-        'wait-lock-eth': 5,
-        'withdraw-eth': 6,
+        'wait-lock-puffs': 5,
+        'withdraw-puffs': 6,
         'finish': 7,
         'end': 8
       }
 
-      if (!this.ethTokenSwap) {
-        throw new Error('USDT2ETH: "ethTokenSwap" of type object required')
+      if (!this.puffsTokenSwap) {
+        throw new Error('USDT2PUFFS: "puffsTokenSwap" of type object required')
       }
       if (!this.usdtSwap) {
-        throw new Error('USDT2ETH: "usdtSwap" of type object required')
+        throw new Error('USDT2PUFFS: "usdtSwap" of type object required')
       }
 
       this.state = {
@@ -57,7 +57,7 @@ export default (tokenName) => {
         usdtFundingTransactionHash: null,
         usdtFundingTransactionValues: null,
 
-        ethSwapCreationTransactionHash: null,
+        puffsSwapCreationTransactionHash: null,
 
         secretHash: null,
         usdtScriptValues: null,
@@ -68,10 +68,10 @@ export default (tokenName) => {
         isBalanceEnough: false,
         balance: null,
 
-        isEthContractFunded: false,
+        isPuffsContractFunded: false,
 
-        ethSwapWithdrawTransactionHash: null,
-        isEthWithdrawn: false,
+        puffsSwapWithdrawTransactionHash: null,
+        isPuffsWithdrawn: false,
         isBtcWithdrawn: false,
 
         refundTxHex: null,
@@ -207,40 +207,40 @@ export default (tokenName) => {
           // redeem: txHex
         },
 
-        // 5. Wait participant creates ETH Contract
+        // 5. Wait participant creates puffs Contract
 
         () => {
            const { buyAmount, participant } = flow.swap
 
-           flow.swap.room.once('create eth contract', ({ ethSwapCreationTransactionHash }) => {
+           flow.swap.room.once('create puffs contract', ({ puffsSwapCreationTransactionHash }) => {
              flow.setState({
-               ethSwapCreationTransactionHash,
+               puffsSwapCreationTransactionHash,
              })
            })
 
            const checkContractBalance = async () => {
-             const balanceCheckResult = await flow.ethTokenSwap.checkBalance({
-               ownerAddress: participant.eth.address,
+             const balanceCheckResult = await flow.puffsTokenSwap.checkBalance({
+               ownerAddress: participant.puffs.address,
                expectedValue: buyAmount,
              })
 
              if (balanceCheckResult) {
-               console.error(`Waiting until deposit: ETH balance check error:`, balanceCheckResult)
-               flow.swap.events.dispatch('eth balance check error', balanceCheckResult)
+               console.error(`Waiting until deposit: puffs balance check error:`, balanceCheckResult)
+               flow.swap.events.dispatch('puffs balance check error', balanceCheckResult)
              } else {
                clearInterval(checkBalanceTimer)
 
-               if (!flow.state.isEthContractFunded) {
+               if (!flow.state.isPuffsContractFunded) {
                  flow.finishStep({
-                   isEthContractFunded: true,
-                 }, { step: 'wait-lock-eth' })
+                   isPuffsContractFunded: true,
+                 }, { step: 'wait-lock-puffs' })
                }
              }
            }
 
            const checkBalanceTimer = setInterval(checkContractBalance, 20 * 1000)
 
-           flow.swap.room.once('create eth contract', () => {
+           flow.swap.room.once('create puffs contract', () => {
              checkContractBalance()
            })
         },
@@ -252,9 +252,9 @@ export default (tokenName) => {
             flow.finishStep()
           }
 
-          const tokenAddressIsValid = await flow.ethTokenSwap.checkTokenIsValid({
-            ownerAddress: flow.swap.participant.eth.address,
-            participantAddress: this.app.services.auth.accounts.eth.address,
+          const tokenAddressIsValid = await flow.puffsTokenSwap.checkTokenIsValid({
+            ownerAddress: flow.swap.participant.puffs.address,
+            participantAddress: this.app.services.auth.accounts.puffs.address,
           })
 
           if (!tokenAddressIsValid) {
@@ -263,16 +263,16 @@ export default (tokenName) => {
           }
 
           const data = {
-            ownerAddress:   flow.swap.participant.eth.address,
+            ownerAddress:   flow.swap.participant.puffs.address,
             secret:         flow.state.secret,
           }
 
           try {
-            await flow.ethTokenSwap.withdraw(data, (hash) => {
+            await flow.puffsTokenSwap.withdraw(data, (hash) => {
               debug('swap.core:flow')('withdraw tx hash', hash)
 
               flow.setState({
-                ethSwapWithdrawTransactionHash: hash,
+                puffsSwapWithdrawTransactionHash: hash,
               })
             })
           } catch (err) {
@@ -282,7 +282,7 @@ export default (tokenName) => {
           }
 
           flow.swap.room.sendMessage({
-            event: 'finish eth withdraw',
+            event: 'finish puffs withdraw',
           })
 
           flow.finishStep({
@@ -378,5 +378,5 @@ export default (tokenName) => {
     }
   }
 
-  return USDT2ETHTOKEN
+  return USDT2PUFFSTOKEN
 }
