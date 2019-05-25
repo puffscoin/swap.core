@@ -71,7 +71,7 @@ class Order {
 
         try {
           // todo: check other blockchains
-          if (participant.eth.address === participantMetadata.address || participant.btc.address === participantMetadata.address) {
+          if (participant.puffs.address === participantMetadata.address || participant.btc.address === participantMetadata.address) {
             reputation = this.app.env.swapsExplorer.getVerifiedReputation(participantMetadata)
           }
         } catch (err) {
