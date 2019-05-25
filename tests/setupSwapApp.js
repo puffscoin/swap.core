@@ -8,8 +8,8 @@ const SwapAuth = swap.auth
 const SwapRoom = swap.room
 const SwapOrders = swap.orders
 
-const { EthSwap, EthTokenSwap, BtcSwap } = swap.swaps
-const { ETH2BTC, BTC2ETH, ETHTOKEN2BTC, BTC2ETHTOKEN } = swap.flows
+const { PuffsSwap, PuffsTokenSwap, BtcSwap } = swap.swaps
+const { PUFFS2BTC, BTC2PUFFS, PUFFSTOKEN2BTC, BTC2PUFFSTOKEN } = swap.flows
 
 const Web3 = require('web3')
 
@@ -35,7 +35,7 @@ SwapApp.setup({
   },
   services: [
     new SwapAuth({
-      eth: null,
+      puffs: null,
       btc: null,
     }),
     new SwapRoom(config.swapRoom),
@@ -43,17 +43,17 @@ SwapApp.setup({
   ],
 
   swaps: [
-    new EthSwap(config.ethSwap),
+    new PuffsSwap(config.puffsSwap),
     new BtcSwap(config.btcSwap),
-    new EthTokenSwap(config.noxonTokenSwap),
-    new EthTokenSwap(config.swapTokenSwap),
+    new PuffsTokenSwap(config.noxonTokenSwap),
+    new PuffsTokenSwap(config.swapTokenSwap),
   ],
 
   flows: [
-    ETH2BTC,
-    BTC2ETH,
-    ETHTOKEN2BTC(constants.COINS.noxon),
-    BTC2ETHTOKEN(constants.COINS.noxon),
+    PUFFS2BTC,
+    BTC2PUFFS,
+    PUFFSTOKEN2BTC(constants.COINS.noxon),
+    BTC2PUFFSTOKEN(constants.COINS.noxon),
   ],
 })
 
