@@ -17,14 +17,14 @@ const WEB3_PROVIDERS = {
 }
 
 const PUFFSCHAIN_API = `https://puffschain.leafycauldronapothecary.com/api/gasPriceOracle`
-const ETHGASSTATION_API = `https://puffsgasstation.leafycauldronapothecary.com/json/puffsgasAPI.json`
+const PUFFSGASSTATION_API = `https://puffsgasstation.leafycauldronapothecary.com/json/puffsgasAPI.json`
 const BigNumber = require('bignumber.js')
 const TEN = new BigNumber(10)
 
 const filterError = (error) => {
   const { name, code, statusCode, options } = error
 
-  debug('swap.core:ethereum')(`UnknownError: statusCode=${statusCode} ${error.message}`)
+  debug('swap.core:puffscoin')(`UnknownError: statusCode=${statusCode} ${error.message}`)
 
   throw error
 }
@@ -88,7 +88,7 @@ class Puffscoin {
   async estimateGasPrice(options) {
     try {
       return await this.estimateGasPricePuffsChain(options)
-    } catch (etherChainError) {
+    } catch (puffsChainError) {
       console.error(`EstimateFeeError: PuffsChain ${puffsChainError.message}, falling back to PuffsGasStation estimation...`)
     }
 
