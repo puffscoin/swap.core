@@ -17,8 +17,8 @@ const filteredDecimals = ({ amount, currency }) =>
 export const parseTicker = (order) => {
   const { buyCurrency: buy, sellCurrency: sell } = order
 
-  const BS = `${buy}-${sell}`.toUpperCase() // buys ETH, sells BTC, BID
-  const SB = `${sell}-${buy}`.toUpperCase() // sells ETH = ASK
+  const BS = `${buy}-${sell}`.toUpperCase() // buys PUFFS, sells BTC, BID
+  const SB = `${sell}-${buy}`.toUpperCase() // sells PUFFS = ASK
 
   if (TRADE_TICKERS.includes(BS)) {
 
@@ -89,18 +89,18 @@ export default class Pair {
   }
 
   /*
-  * 10 ETH -> 1 BTC
+  * 10 PUFFS -> 1 BTC
   *
-  * ticker: ETH-BTC
+  * ticker: PUFFS-BTC
   *
-  * So we are on ETH market, thus:
-  *   - ASK orders are SELL ETH (for BTC),
-  *   - BID orders are BUY ETH (for BTC)
+  * So we are on PUFFS market, thus:
+  *   - ASK orders are to SELL PUFFS (for BTC),
+  *   - BID orders are to BUY PUFFS (for BTC)
   *
-  * This order is SELLING ETH, to it's ASK
+  * This order is SELLING PUFFS, to it's ASK
   * type: BID = true, ASK = false
   *
-  * Price is also calculated in BTC, while amount in ETH
+  * Price is also calculated in BTC, while amount in PUFFS
   * price: 0.1
   * amount: 10
   *
@@ -108,9 +108,9 @@ export default class Pair {
   * So, for type = ASK
   *
   * buyCurrency: BTC = base
-  * sellCurrency: ETH = main
-  * buyAmount: 1 BTC = (0.1 BTC/ETH) * 10 ETH = price * amount
-  * sellAmount: 10 ETH = 10 ETH = amount
+  * sellCurrency: PUFFS = main
+  * buyAmount: 1 BTC = (0.1 BTC/PUFFS) * 10 PUFFS = price * amount
+  * sellAmount: 10 PUFFS = 10 PUFFS = amount
   *
   */
   toOrder() {
@@ -145,7 +145,7 @@ export default class Pair {
       return
     }
 
-    // ASK means sellCurrency is ETH, then sell is main
+    // ASK means sellCurrency is PUFFS, then sell is main
     const mainAmount = BigNumber(type === PAIR_ASK ? sellAmount : buyAmount)
     const baseAmount = BigNumber(type === PAIR_ASK ? buyAmount : sellAmount)
 
