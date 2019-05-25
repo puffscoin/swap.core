@@ -2,8 +2,8 @@ import SwapApp, { SwapInterface } from 'swap.app'
 import { Bitcoin } from 'examples/react/src/instances/bitcoin'
 import bitcoin from 'bitcoinjs-lib'
 import Swap from 'swap.swap'
-import { USDT2ETHTOKEN, ETHTOKEN2USDT } from 'swap.flows'
-import { UsdtSwap, EthTokenSwap } from 'swap.swaps'
+import { USDT2PUFFSTOKEN, PUFFSTOKEN2USDT } from 'swap.flows'
+import { UsdtSwap, PuffsTokenSwap } from 'swap.swaps'
 import fixtures from './fixtures'
 
 jest.mock('swap.app')
@@ -29,7 +29,7 @@ const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 //   publicKey: '02b65eed68f383178ee4bf301d1a2d231194eba2a65969187d49a6cdd945ea4f9d',
 // }
 //
-// const ethOwner = {
+// const puffsOwner = {
 //   privateKey: 'cT5n9yx1xw3TcbvpEAuXvzhrTb5du4RAYbAbTqHfZ9nbq6gJQMGn',
 //   publicKey: '02dfae561eb061072da126f1aed7d47202a36b762e89e913c400cdb682360d9620',
 // }
@@ -50,12 +50,12 @@ const _ORDER = {
 
   'owner': {
     peer: 'Qmaaa',
-    eth: { address: '0xfafafafafafafafafafafafafafafafafafafafa' },
+    puffs: { address: '0xfafafafafafafafafafafafafafafafafafafafa' },
     btc: { address: '1Kf1dtmZGUoy482yXeoUuhfAJVKyD9JpWS', publicKey: '0386fbd9bd29d36e07dff34bc09173fb3035fb418ffbcc13c6d06334c1ff2e5422' },
   },
   'participant': {
     peer: 'Qmbbb',
-    eth: { address: '0xdadadadadadadadadadadadadadadadadadadada' },
+    puffs: { address: '0xdadadadadadadadadadadadadadadadadadadada' },
     btc: { address: '1PdhGkf1spScMZtkAFGUaE7q7mX2X71Rr5', publicKey: '033a117cc4d164984c1e8fb58f39f08a17a2e615d77d8f7a35a7d9cdeb9e93ef4c' },
   },
 
@@ -66,10 +66,10 @@ const _ORDER = {
 }
 
 beforeAll(() => {
-  app.flows['USDT2SWAP'] = USDT2ETHTOKEN('SWAP')
-  app.flows['SWAP2USDT'] = ETHTOKEN2USDT('SWAP')
+  app.flows['USDT2SWAP'] = USDT2PUFFSTOKEN('SWAP')
+  app.flows['SWAP2USDT'] = PUFFSTOKEN2USDT('SWAP')
 
-  app.swaps['SWAP'] = new EthTokenSwap({
+  app.swaps['SWAP'] = new PuffsTokenSwap({
     name: 'SWAP',
     fetchBalance: jest.fn(address => 50),
     address: '0xABABABABABABABABABABABABABA',
@@ -165,35 +165,35 @@ describe('full flow', () => {
     expect(swap.flow.state.usdtScriptValues).toEqual(scriptValues)
   })
 
-  test('lock ETH', async () => {
+  test('lock PUFFS', async () => {
     swap.flow.verifyBtcScript()
 
     expect(swap.flow.state.step).toEqual(4)
 
     await timeout(100)
 
-    expect(app.services.room.sendConfirmation.mock.calls[2]).toEqual(_messageForEvent('create eth contract'))
+    expect(app.services.room.sendConfirmation.mock.calls[2]).toEqual(_messageForEvent('create puffs contract'))
 
-    // expect(app.services.room.sendMessage.mock.calls[2]).toEqual(_messageForEvent('create eth contract'))
+    // expect(app.services.room.sendMessage.mock.calls[2]).toEqual(_messageForEvent('create puffs contract'))
 
     // expect(app.services.room.sendMessage).toHaveBeenCalled()
 
-    swap.flow.ethTokenSwap.contract.methods.createSwap().emitter.emit('transactionHash', 'asdfghjkl')
+    swap.flow.puffsTokenSwap.contract.methods.createSwap().emitter.emit('transactionHash', 'asdfghjkl')
 
     // await timeout(0)
 
-    expect(swap.flow.state.ethSwapCreationTransactionHash).toBe('asdfghjkl')
+    expect(swap.flow.state.puffsSwapCreationTransactionHash).toBe('asdfghjkl')
   })
 
   test('withdraws USDT', async () => {
     expect(swap.flow.state.step).toBe(6)
 
-    swap.flow.ethTokenSwap.contract.state.secret = secret
+    swap.flow.puffsTokenSwap.contract.state.secret = secret
 
     await timeout(100)
     expect(swap.flow.state.step).toBe(6)
 
-    app.services.room.emit('finish eth withdraw', _roomId)
+    app.services.room.emit('finish puffs withdraw', _roomId)
 
     await timeout(100)
     expect(swap.flow.state.step).toBe(9)
