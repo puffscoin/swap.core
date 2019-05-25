@@ -21,7 +21,7 @@ class Wallet {
       case 'btc':
         const account = this.auth.accounts.btc
         return await this.bitcoin.sendTransaction({ account, to, value })
-      case 'eth':
+      case 'puffs':
         return await this.puffscoin.sendTransaction({to, value})
       default:
         return Promise.reject('not implemented')
