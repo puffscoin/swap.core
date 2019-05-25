@@ -4,13 +4,13 @@ import SwapApp, { constants, util } from 'swap.app'
 import { Flow } from 'swap.swap'
 
 
-class ETH2BTC extends Flow {
+class PUFFS2BTC extends Flow {
 
   static getName() {
     return `${this.getFromName()}2${this.getToName()}`
   }
   static getFromName() {
-    return constants.COINS.eth
+    return constants.COINS.puffs
   }
   static getToName() {
     return constants.COINS.btc
@@ -18,7 +18,7 @@ class ETH2BTC extends Flow {
   constructor(swap) {
     super(swap)
 
-    this._flowName = ETH2BTC.getName()
+    this._flowName = PUFFS2BTC.getName()
 
     this.stepNumbers = {
       'sign': 1,
@@ -32,11 +32,11 @@ class ETH2BTC extends Flow {
       'end': 9
     }
 
-    this.ethSwap = swap.participantSwap
+    this.puffsSwap = swap.participantSwap
     this.btcSwap = swap.ownerSwap
 
-    if (!this.ethSwap) {
-      throw new Error('BTC2ETH: "ethSwap" of type object required')
+    if (!this.puffsSwap) {
+      throw new Error('BTC2PUFFS: "puffsSwap" of type object required')
     }
     if (!this.btcSwap) {
       throw new Error('BTC2ETH: "btcSwap" of type object required')
@@ -62,13 +62,13 @@ class ETH2BTC extends Flow {
       balance: null,
 
       btcScriptCreatingTransactionHash: null,
-      ethSwapCreationTransactionHash: null,
-      canCreateEthTransaction: true,
-      isEthContractFunded: false,
+      puffsSwapCreationTransactionHash: null,
+      canCreatePuffsTransaction: true,
+      isPuffsContractFunded: false,
 
       secret: null,
 
-      isEthWithdrawn: false,
+      isPuffsWithdrawn: false,
       isBtcWithdrawn: false,
 
       refundTransactionHash: null,
@@ -139,7 +139,7 @@ class ETH2BTC extends Flow {
         this.syncBalance()
       },
 
-      // 5. Create ETH Contract
+      // 5. Create PUFFS Contract
 
       async () => {
         const { participant, buyAmount, sellAmount } = flow.swap
@@ -167,7 +167,7 @@ class ETH2BTC extends Flow {
         })
 
         const swapData = {
-          participantAddress: participant.eth.address,
+          participantAddress: participant.puffs.address,
           secretHash: flow.state.secretHash,
           amount: sellAmount,
           targetWallet: flow.swap.destinationSellAddress
@@ -176,18 +176,18 @@ class ETH2BTC extends Flow {
           if (!flow.state.isEthContractFunded) {
             try {
               debug('swap.core:flow')('create swap', swapData)
-              await this.ethSwap.create(swapData, (hash) => {
+              await this.puffsSwap.create(swapData, (hash) => {
                 debug('swap.core:flow')('create swap tx hash', hash)
                 flow.swap.room.sendMessage({
-                  event: 'create eth contract',
+                  event: 'create PUFFS contract',
                   data: {
-                    ethSwapCreationTransactionHash: hash,
+                    puffsSwapCreationTransactionHash: hash,
                   },
                 })
 
                 flow.setState({
-                  ethSwapCreationTransactionHash: hash,
-                  canCreateEthTransaction: true,
+                  puffsSwapCreationTransactionHash: hash,
+                  canCreatePuffsTransaction: true,
                 })
               })
             } catch (err) {
@@ -200,7 +200,7 @@ class ETH2BTC extends Flow {
               }
 
               flow.setState({
-                canCreateEthTransaction: false,
+                canCreatePuffsTransaction: false,
               })
 
               return null
@@ -208,24 +208,24 @@ class ETH2BTC extends Flow {
           }
           return true
         }
-        const isEthContractFunded = await util.helpers.repeatAsyncUntilResult(() =>
+        const isPuffsContractFunded = await util.helpers.repeatAsyncUntilResult(() =>
           tryCreateSwap(),
         )
 
-        if (isEthContractFunded) {
+        if (isPuffsContractFunded) {
           debug('swap.core:flow')(`finish step`)
           flow.finishStep({
-            isEthContractFunded,
-          }, {step: 'lock-eth'})
+            isPuffsContractFunded,
+          }, {step: 'lock-puffs'})
         }
       },
 
       // 6. Wait participant withdraw
 
       async () => {
-        flow.swap.room.once('ethWithdrawTxHash', async ({ethSwapWithdrawTransactionHash}) => {
+        flow.swap.room.once('puffsWithdrawTxHash', async ({puffsSwapWithdrawTransactionHash}) => {
           flow.setState({
-            ethSwapWithdrawTransactionHash,
+            puffsSwapWithdrawTransactionHash,
           })
 
           let secretFromTxhash = await util.helpers.repeatAsyncUntilResult(() => {
@@ -234,36 +234,36 @@ class ETH2BTC extends Flow {
             if (secret) {
               return secret
             } else {
-              return flow.ethSwap.getSecretFromTxhash(ethSwapWithdrawTransactionHash)
+              return flow.puffsSwap.getSecretFromTxhash(puffsSwapWithdrawTransactionHash)
             }
           })
 
           secretFromTxhash = `0x${secretFromTxhash.replace(/^0x/, '')}`
 
-          const { isEthWithdrawn } = flow.state
+          const { isPuffsWithdrawn } = flow.state
 
-          if (!isEthWithdrawn && secretFromTxhash) {
-            debug('swap.core:flow')('got secret from tx', ethSwapWithdrawTransactionHash, secretFromTxhash)
+          if (!isPuffsWithdrawn && secretFromTxhash) {
+            debug('swap.core:flow')('got secret from tx', puffsSwapWithdrawTransactionHash, secretFromTxhash)
             flow.finishStep({
-              isEthWithdrawn: true,
+              isPuffsWithdrawn: true,
               secret: secretFromTxhash,
-            }, {step: 'wait-withdraw-eth'})
+            }, {step: 'wait-withdraw-puffs'})
           }
         })
 
         flow.swap.room.sendMessage({
-          event: 'request ethWithdrawTxHash',
+          event: 'request puffsWithdrawTxHash',
         })
 
-        // If partner decides to scam and doesn't send ethWithdrawTxHash
-        // then we try to withdraw as in ETHTOKEN2USDT
+        // If partner decides to scam and doesn't send puffsWithdrawTxHash
+        // then we try to withdraw as in PUFFSTOKEN2USDT
 
         const { participant } = flow.swap
 
         const checkSecretExist = async () => {
           try {
-            let secretFromContract = await flow.ethSwap.getSecret({
-              participantAddress: participant.eth.address,
+            let secretFromContract = await flow.puffsSwap.getSecret({
+              participantAddress: participant.puffs.address,
             })
 
             if (secretFromContract) {
@@ -272,7 +272,7 @@ class ETH2BTC extends Flow {
 
               return secretFromContract
             } else {
-              console.warn('Secret still not exists')
+              console.warn('Secret does not exist')
 
               return null
             }
@@ -284,14 +284,14 @@ class ETH2BTC extends Flow {
           }
         }
 
-        flow.swap.room.once('finish eth withdraw', () =>
+        flow.swap.room.once('finish puffs withdraw', () =>
           checkSecretExist()
         )
 
         const secretFromContract = await util.helpers.repeatAsyncUntilResult((stopRepeat) => {
-          const { isEthWithdrawn } = flow.state
+          const { isPuffsWithdrawn } = flow.state
 
-          if (isEthWithdrawn) {
+          if (isPuffsWithdrawn) {
             console.warn('Secret already exists')
             stopRepeat()
 
@@ -305,9 +305,9 @@ class ETH2BTC extends Flow {
           debug('swap.core:flow')('got secret from smart contract', secretFromContract)
 
           flow.finishStep({
-            isEthWithdrawn: true,
+            isPuffsWithdrawn: true,
             secret: secretFromContract,
-          }, { step: 'wait-withdraw-eth' })
+          }, { step: 'wait-withdraw-puffs' })
         }
       },
 
@@ -318,7 +318,7 @@ class ETH2BTC extends Flow {
         let { secret, btcScriptValues } = flow.state
 
         if (!btcScriptValues) {
-          console.error('There is no "btcScriptValues" in state. No way to continue swap...')
+          console.error('There are no "btcScriptValues" in state. No way to continue swap...')
           return
         }
 
@@ -370,15 +370,15 @@ class ETH2BTC extends Flow {
     this.swap.room.once('do withdraw', async ({secret}) => {
       try {
         const data = {
-          participantAddress: flow.swap.participant.eth.address,
+          participantAddress: flow.swap.participant.puffs.address,
           secret,
         }
 
-        await flow.ethSwap.withdrawNoMoney(data, (hash) => {
+        await flow.puffsSwap.withdrawNoMoney(data, (hash) => {
           flow.swap.room.sendMessage({
             event: 'withdraw ready',
             data: {
-              ethSwapWithdrawTransactionHash: hash,
+              puffsSwapWithdrawTransactionHash: hash,
             }
           })
         })
@@ -396,11 +396,11 @@ class ETH2BTC extends Flow {
     const { participant } = this.swap
 
     const swapData = {
-      ownerAddress:       this.app.services.auth.accounts.eth.address,
-      participantAddress: participant.eth.address
+      ownerAddress:       this.app.services.auth.accounts.puffs.address,
+      participantAddress: participant.puffs.address
     }
 
-    return this.ethSwap.checkSwapExists(swapData)
+    return this.puffsSwap.checkSwapExists(swapData)
   }
 
   async sign() {
@@ -461,7 +461,7 @@ class ETH2BTC extends Flow {
         isBalanceFetching: true,
       })
 
-      const balance = await this.ethSwap.fetchBalance(this.app.services.auth.accounts.eth.address)
+      const balance = await this.ethSwap.fetchBalance(this.app.services.auth.accounts.puffs.address)
       const isEnoughMoney = sellAmount.isLessThanOrEqualTo(balance)
 
       this.setState({
@@ -508,7 +508,7 @@ class ETH2BTC extends Flow {
       return true
     }
 
-    const wasRefunded = this.ethSwap.wasRefunded({ secretHash })
+    const wasRefunded = this.puffsSwap.wasRefunded({ secretHash })
 
     if (wasRefunded) {
       debug('swap.core:flow')('This swap was refunded')
@@ -516,8 +516,8 @@ class ETH2BTC extends Flow {
       return refundHandler()
     }
 
-    return this.ethSwap.refund({
-      participantAddress: participant.eth.address,
+    return this.puffsSwap.refund({
+      participantAddress: participant.puffs.address,
     }, (hash) => {
       this.setState({
         refundTransactionHash: hash,
@@ -526,7 +526,7 @@ class ETH2BTC extends Flow {
     .then(() => refundHandler())
   }
 
-  stopSwapProcess() { // вызывается в реакте
+  stopSwapProcess() { 
     this.setState({
       isStoppedSwap: true,
     })
@@ -534,7 +534,7 @@ class ETH2BTC extends Flow {
   }
 
   async tryWithdraw(_secret) {
-    const { secret, secretHash, isEthWithdrawn, isBtcWithdrawn, btcScriptValues } = this.state
+    const { secret, secretHash, isPuffsWithdrawn, isBtcWithdrawn, btcScriptValues } = this.state
 
     if (!_secret)
       throw new Error(`Withdrawal is automatic. For manual withdrawal, provide a secret`)
@@ -546,7 +546,7 @@ class ETH2BTC extends Flow {
       console.warn(`Secret already known and is different. Are you sure?`)
 
     if (isBtcWithdrawn)
-      console.warn(`Looks like money were already withdrawn, are you sure?`)
+      console.warn(`Looks like coins have already been withdrawn, are you sure?`)
 
     debug('swap.core:flow')(`WITHDRAW using secret = ${_secret}`)
 
@@ -585,4 +585,4 @@ class ETH2BTC extends Flow {
 }
 
 
-export default ETH2BTC
+export default PUFFS2BTC
