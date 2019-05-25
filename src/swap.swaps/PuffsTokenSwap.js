@@ -1,10 +1,10 @@
 import debug from 'debug'
 import SwapApp, { SwapInterface, constants, util } from 'swap.app'
 import BigNumber from 'bignumber.js'
-import InputDataDecoder from 'ethereum-input-data-decoder'
+import InputDataDecoder from 'puffscoin-input-data-decoder'
 
 
-class EthTokenSwap extends SwapInterface {
+class PuffsTokenSwap extends SwapInterface {
 
   /**
    *
@@ -21,29 +21,29 @@ class EthTokenSwap extends SwapInterface {
     super()
 
     if (!options.name) {
-      throw new Error('EthTokenSwap: "name" required')
+      throw new Error('PuffsTokenSwap: "name" required')
     }
     if (!Object.values(constants.COINS).includes(options.name.toUpperCase())) {
-      throw new Error('EthTokenSwap: "name" should be correct')
+      throw new Error('PuffsTokenSwap: "name" should be correct')
     }
     if (typeof options.address !== 'string') {
-      throw new Error('EthTokenSwap: "address" required')
+      throw new Error('PuffsTokenSwap: "address" required')
     }
     if (typeof options.decimals !== 'number') {
-      throw new Error('EthTokenSwap: "decimals" required')
+      throw new Error('PuffsTokenSwap: "decimals" required')
     }
     if (!Array.isArray(options.abi)) {
-      throw new Error('EthTokenSwap: "abi" required')
+      throw new Error('PuffsTokenSwap: "abi" required')
     }
     if (typeof options.tokenAddress !== 'string') {
-      throw new Error('EthTokenSwap: "tokenAddress" required')
+      throw new Error('PuffsTokenSwap: "tokenAddress" required')
     }
     if (!Array.isArray(options.tokenAbi)) {
-      throw new Error('EthTokenSwap: "tokenAbi" required')
+      throw new Error('PuffsTokenSwap: "tokenAbi" required')
     }
     if (typeof options.estimateGasPrice !== 'function') {
       // ({ speed } = {}) => gasPrice
-      console.warn(`EthTokenSwap: "estimateGasPrice" is not a function. You will not be able use automatic mempool-based fee`)
+      console.warn(`PuffsTokenSwap: "estimateGasPrice" is not a function. You will not be able use automatic mempool-based fee`)
     }
 
 
@@ -69,15 +69,15 @@ class EthTokenSwap extends SwapInterface {
     this.app = app
 
     this.decoder        = new InputDataDecoder(this.abi)
-    this.contract       = new this.app.env.web3.eth.Contract(this.abi, this.address)
-    this.ERC20          = new this.app.env.web3.eth.Contract(this.tokenAbi, this.tokenAddress)
+    this.contract       = new this.app.env.web3.puffs.Contract(this.abi, this.address)
+    this.ERC20          = new this.app.env.web3.puffs.Contract(this.tokenAbi, this.tokenAddress)
   }
 
   async updateGas() {
     try {
       this.gasPrice = await this.estimateGasPrice({ speed: 'fast' })
     } catch(err) {
-      debug('swap.core:swaps')(`EthTokenSwap: Error with gas update: ${err.message}, using old value gasPrice=${this.gasPrice}`)
+      debug('swap.core:swaps')(`PuffsTokenSwap: Error with gas update: ${err.message}, using old value gasPrice=${this.gasPrice}`)
     }
   }
 
@@ -99,7 +99,7 @@ class EthTokenSwap extends SwapInterface {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.ERC20.methods.approve(this.address, newAmount).send({
-          from: this.app.services.auth.accounts.eth.address,
+          from: this.app.services.auth.accounts.puffs.address,
           gas: this.gasLimit,
           gasPrice: this.gasPrice,
         })
@@ -132,7 +132,7 @@ class EthTokenSwap extends SwapInterface {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.ERC20.methods.allowance(spender, this.address).call({
-          from: this.app.services.auth.accounts.eth.address,
+          from: this.app.services.auth.accounts.puffs.address,
         })
 
         resolve(result)
@@ -183,7 +183,7 @@ class EthTokenSwap extends SwapInterface {
       const values  = [ hash, participantAddress, newAmount, this.tokenAddress ]
 
       const params  = {
-        from: this.app.services.auth.accounts.eth.address,
+        from: this.app.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
@@ -197,7 +197,7 @@ class EthTokenSwap extends SwapInterface {
         }
 
         params.gas = gasFee;
-        console.log("EthTokenSwap -> createSwap -> gasFee",gasFee);
+        console.log("PuffsTokenSwap -> createSwap -> gasFee",gasFee);
         const result = await this.contract.methods.createSwap(...values).send(params)
           .on('transactionHash', (hash) => {
             if (typeof handleTransactionHash === 'function') {
@@ -239,7 +239,7 @@ class EthTokenSwap extends SwapInterface {
       const values  = [ hash , participantAddress, targetWallet , newAmount, this.tokenAddress ]
 
       const params  = {
-        from: this.app.services.auth.accounts.eth.address,
+        from: this.app.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
@@ -254,7 +254,7 @@ class EthTokenSwap extends SwapInterface {
         }
 
         params.gas = gasFee;
-        debug('swap.core:swaps')("EthTokenSwap -> create -> gasFee",gasFee);
+        debug('swap.core:swaps')("PuffsTokenSwap -> create -> gasFee",gasFee);
         const result = await this.contract.methods.createSwapTarget(...values).send(params)
           .on('transactionHash', (hash) => {
             if (typeof handleTransactionHash === 'function') {
@@ -318,7 +318,7 @@ class EthTokenSwap extends SwapInterface {
 
       try {
         balance = await this.contract.methods.getBalance(ownerAddress).call({
-          from: this.app.services.auth.accounts.eth.address,
+          from: this.app.services.auth.accounts.puffs.address,
         })
       }
       catch (err) {
@@ -400,13 +400,13 @@ class EthTokenSwap extends SwapInterface {
    * @returns {string}
    */
   async getTargetWalletPromise(ownerAddress) {
-    debug('swap.core:swaps')('EthTokenSwap->getTargetWallet');
+    debug('swap.core:swaps')('PuffsTokenSwap->getTargetWallet');
     return new Promise(async (resolve, reject) => {
       try {
         const targetWallet = await this.contract.methods.getTargetWallet(ownerAddress).call({
-          from: this.app.services.auth.accounts.eth.address,
+          from: this.app.services.auth.accounts.puffs.address,
         })
-        debug('swap.core:swaps')('EthTokenSwap->getTargetWallet',targetWallet);
+        debug('swap.core:swaps')('PuffsTokenSwap->getTargetWallet',targetWallet);
 
         resolve(targetWallet)
       }
@@ -427,7 +427,7 @@ class EthTokenSwap extends SwapInterface {
   async calcWithdrawGas(data) {
     return this.calcWithdrawOtherGas({
       ownerAddress: data.ownerAddress,
-      participantAddress: this.app.services.auth.accounts.eth.address,
+      participantAddress: this.app.services.auth.accounts.puffs.address,
       secret: data.secret,
     })
   }
@@ -443,7 +443,7 @@ class EthTokenSwap extends SwapInterface {
   async withdraw(data, handleTransactionHash) {
     return this.withdrawOther({
       ownerAddress: data.ownerAddress,
-      participantAddress: this.app.services.auth.accounts.eth.address,
+      participantAddress: this.app.services.auth.accounts.puffs.address,
       secret: data.secret,
     } , handleTransactionHash)
   }
@@ -457,7 +457,7 @@ class EthTokenSwap extends SwapInterface {
    */
   async calcWithdrawNoMoneyGas(data) {
     return this.calcWithdrawOtherGas({
-      ownerAddress: this.app.services.auth.accounts.eth.address,
+      ownerAddress: this.app.services.auth.accounts.puffs.address,
       participantAddress: data.participantAddress,
       secret: data.secret,
     })
@@ -473,7 +473,7 @@ class EthTokenSwap extends SwapInterface {
    */
   async withdrawNoMoney(data, handleTransactionHash) {
     return this.withdrawOther({
-      ownerAddress: this.app.services.auth.accounts.eth.address,
+      ownerAddress: this.app.services.auth.accounts.puffs.address,
       participantAddress: data.participantAddress,
       secret: data.secret,
     }, handleTransactionHash)
@@ -488,7 +488,7 @@ class EthTokenSwap extends SwapInterface {
       const _secret = `0x${secret.replace(/^0x/, '')}`
 
       const params = {
-        from: this.app.services.auth.accounts.eth.address,
+        from: this.app.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
@@ -520,14 +520,14 @@ class EthTokenSwap extends SwapInterface {
       const _secret = `0x${secret.replace(/^0x/, '')}`
 
       const params = {
-        from: this.app.services.auth.accounts.eth.address,
+        from: this.app.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
 
       try {
         const gasFee = await this.calcWithdrawOtherGas(data);
-        debug('swap.core:swaps')("EthTokenSwap -> withdrawOther -> gasFee",gasFee);
+        debug('swap.core:swaps')("PuffsTokenSwap -> withdrawOther -> gasFee",gasFee);
 
         params.gas = gasFee;
         const result = await this.contract.methods.withdrawOther(_secret, ownerAddress, participantAddress).send(params)
@@ -562,7 +562,7 @@ class EthTokenSwap extends SwapInterface {
 
     return new Promise(async (resolve, reject) => {
       const params = {
-        from: this.app.services.auth.accounts.eth.address,
+        from: this.app.services.auth.accounts.puffs.address,
         gas: this.gasLimit,
         gasPrice: this.gasPrice,
       }
@@ -593,7 +593,7 @@ class EthTokenSwap extends SwapInterface {
     return new Promise(async (resolve, reject) => {
       try {
         const secret = await this.contract.methods.getSecret(participantAddress).call({
-          from: this.app.services.auth.accounts.eth.address,
+          from: this.app.services.auth.accounts.puffs.address,
         })
 
         const secretValue = secret && !/^0x0+$/.test(secret) ? secret : null
@@ -613,7 +613,7 @@ class EthTokenSwap extends SwapInterface {
    * @returns {Promise<any>}
    */
   getSecretFromTxhash = (transactionHash) =>
-    this.app.env.web3.eth.getTransaction(transactionHash)
+    this.app.env.web3.puffs.getTransaction(transactionHash)
       .then(txResult => {
         try {
           const bytes32 = this.decoder.decodeData(txResult.input)
@@ -627,4 +627,4 @@ class EthTokenSwap extends SwapInterface {
 }
 
 
-export default EthTokenSwap
+export default PuffsTokenSwap
