@@ -33,7 +33,7 @@ const btcOwner = {
   privateKey: 'cRkKzpir8GneA48iQVjSpUGT5mopFRTGDES7Kb43JduzrbhuVncn',
   publicKey: '02b65eed68f383178ee4bf301d1a2d231194eba2a65969187d49a6cdd945ea4f9d',
 }
-const ethOwner = {
+const puffsOwner = {
   privateKey: 'cT5n9yx1xw3TcbvpEAuXvzhrTb5du4RAYbAbTqHfZ9nbq6gJQMGn',
   publicKey: '02dfae561eb061072da126f1aed7d47202a36b762e89e913c400cdb682360d9620',
 }
@@ -48,7 +48,7 @@ const getData = ({ publicKey }) => {
 }
 
 const btcOwnerData = getData(btcOwner)
-const ethOwnerData = getData(ethOwner)
+const puffsOwnerData = getData(puffsOwner)
 
 const btcSwap = new BtcSwap({
   fetchBalance: (address) => 10,
@@ -136,7 +136,7 @@ test('btcSwap can estimate confident balance on script', async () => {
 //   const { script, lockTime } = btcSwap.createScript({
 //     secretHash,
 //     btcOwnerPublicKey: btcOwner.publicKey,
-//     ethOwnerPublicKey: ethOwner.publicKey,
+//     puffsOwnerPublicKey: puffsOwner.publicKey,
 //   })
 //
 //   log('\nCreate complete')
@@ -147,7 +147,7 @@ test('btcSwap can estimate confident balance on script', async () => {
 //   log('\nFund complete')
 //   log(fundResult)
 //
-//   const withdrawResult = await btcSwap.withdraw({ btcData: ethOwnerData, script, secret })
+//   const withdrawResult = await btcSwap.withdraw({ btcData: puffsOwnerData, script, secret })
 //
 //   log('\nWithdraw complete')
 //   log(withdrawResult)
